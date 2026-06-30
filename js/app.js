@@ -48,14 +48,14 @@ async function loadEverything() {
 
 // ── DATA LOADING ──────────────────────────────────────────────
 async function loadPrograms() {
-  setStatus("home-status", "loading", "جاري تحميل البرامج من Google Sheets…");
-  setStatus("stages-status", "loading", "جاري تحميل البرامج من Google Sheets…");
+  setStatus("home-status", "loading", "جاري تحميل البرامج...");
+  setStatus("stages-status", "loading", "جاري تحميل البرامج...");
   renderSkeleton("home-cards", 3);
 
   try {
     ALL_PROGRAMS = await SheetsAPI.fetchPrograms();
-    setStatus("home-status", "live", "البيانات محدّثة مباشرة من Google Sheets");
-    setStatus("stages-status", "live", "البيانات محدّثة مباشرة من Google Sheets");
+    setStatus("home-status", "live", "البيانات محدّثة مباشرة من Google Sheets", false, true);
+    setStatus("stages-status", "live", "البيانات محدّثة مباشرة من Google Sheets", false, true);
     renderHome();
     renderStages();
   } catch (err) {
@@ -81,9 +81,10 @@ async function loadStats() {
 }
 
 // ── STATUS BANNERS ───────────────────────────────────────────
-function setStatus(elId, kind, message, withRetry = false) {
+function setStatus(elId, kind, message, withRetry = false, success) {
   const el = document.getElementById(elId);
   if (!el) return;
+  if (success) el.style.display = 'none';
   const icons = { loading: "ti-loader-2", error: "ti-alert-triangle", live: "ti-circle-check" };
   el.className = `data-status ${kind}`;
   el.innerHTML = `
