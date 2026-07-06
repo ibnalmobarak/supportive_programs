@@ -11,20 +11,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.14.0/dist/tabler-icons.min.css">
 <link rel="stylesheet" href="styles.css">
+<link rel="icon" type="image/png" href="LOGO.png">
+<!-- <script>
+  if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.setAttribute('data-theme', 'dark');
+  }
+</script> -->
 </head>
 <body>
 
 <!-- ── TOPBAR ── -->
 <header class="topbar">
   <div class="topbar-inner">
-    <a class="logo-wrap" href="#">
-      <div class="logo-icon"><i class="ti ti-book" aria-hidden="true"></i></div>
+    <a class="logo-wrap fade-in-up" href="#" style="animation-delay: 0.1s">
+      <div class="logo-icon">
+        <img src="LOGO.png" alt="Home" style="width: 20px; height: 30px; vertical-align: middle;">
+      </i></div>
       <div class="logo-text">
         <h1>منصة البرامج المساندة</h1>
         <p>ابن المبارك لتحفيظ القرآن الكريم</p>
       </div>
     </a>
-    <nav class="nav">
+    <nav class="nav fade-in-up" style="animation-delay: 0.2s">
       <button class="nav-btn active" onclick="showSection('home', this)">
         <i class="ti ti-home" aria-hidden="true"></i><span>الرئيسية</span>
       </button>
@@ -32,7 +40,10 @@
         <i class="ti ti-school" aria-hidden="true"></i><span>المراحل</span>
       </button>
       <button class="nav-btn" onclick="showSection('grades', this)">
-        <i class="ti ti-chart-bar" aria-hidden="true"></i><span>مصرف النقاط</span>
+        <i class="ti ti-medal" aria-hidden="true"></i><span>مصرف النقاط</span>
+      </button>
+      <button class="nav-btn theme-toggle" id="theme-toggle" aria-label="تبديل الوضع الليلي">
+        <i class="ti ti-moon" aria-hidden="true" id="theme-icon"></i>
       </button>
     </nav>
   </div>
@@ -42,10 +53,11 @@
 <section id="sec-home" class="main-content">
 
   <div class="hero">
-    <div class="hero-badge">﷽ بسم الله الرحمن الرحيم</div>
-    <h2>البرامج المساندة للقرآن الكريم</h2>
-    <p>منصة متكاملة للبرامج الثقافية والتعليمية والتقنية والتربوية لجميع المراحل الدراسية</p>
-    <div class="hero-stats">
+    <div class="fade-in-up" style="animation-delay: 0.2s;"><img src="LOGO.png" alt="Home" style="height: 200px; vertical-align: middle;"></div>
+    <div class="hero-badge fade-in-up" style="animation-delay: 0.1s">بسم الله الرحمن الرحيم</div>
+    <h2 class="fade-in-up" style="animation-delay: 0.2s">البرامج المساندة للقرآن الكريم</h2>
+    <p class="fade-in-up" style="animation-delay: 0.3s">منصة متكاملة للبرامج الثقافية والتعليمية والتقنية والتربوية لجميع المراحل الدراسية</p>
+    <div class="hero-stats fade-in-up" style="animation-delay: 0.4s">
       <div class="hero-stat"><div class="num">٤</div><div class="lbl">مراحل دراسية</div></div>
       <div class="hero-stat"><div class="num">١٠+</div><div class="lbl">برنامج نشط</div></div>
       <div class="hero-stat"><div class="num">٤</div><div class="lbl">أنواع البرامج</div></div>
@@ -53,8 +65,8 @@
   </div>
 
   <div class="page">
-    <div class="section-header">
-      <div class="section-icon"><i class="ti ti-speakerphone" aria-hidden="true"></i></div>
+    <div class="section-header fade-in-up" style="animation-delay: 0.1s">
+      <div class="section-icon"><i class="ti ti-sparkles" aria-hidden="true"></i></div>
       <div class="section-header-text">
         <div class="section-title">البرامج الجديدة</div>
         <div class="section-sub">البرامج المُعلّمة "جديد" في الشيت تظهر هنا تلقائياً</div>
@@ -63,10 +75,10 @@
 
     <div id="home-status" class="data-status loading"></div>
 
-    <div class="swiper-hint" id="swiper-hint">
+    <div class="swiper-hint fade-in-up" id="swiper-hint" style="animation-delay: 0.2s">
       <i class="ti ti-arrows-horizontal" aria-hidden="true"></i> اسحب يميناً أو يساراً لاستعراض البرامج
     </div>
-    <div class="home-swiper-wrap" id="home-swiper-wrap"></div>
+    <div class="home-swiper-wrap fade-in-up" id="home-swiper-wrap" style="animation-delay: 0.3s"></div>
 
     <div class="cards-grid" id="home-cards"></div>
   </div>
@@ -75,7 +87,7 @@
 <!-- ══════════════════ STAGES ══════════════════ -->
 <section id="sec-stages" style="display:none" class="main-content">
   <div class="page">
-    <div class="section-header">
+    <div class="section-header fade-in-up" style="animation-delay: 0.1s">
       <div class="section-icon"><i class="ti ti-school" aria-hidden="true"></i></div>
       <div class="section-header-text">
         <div class="section-title">برامج المراحل الدراسية</div>
@@ -85,7 +97,7 @@
 
     <div id="stages-status" class="data-status loading"></div>
 
-    <div class="stage-tabs">
+    <div class="stage-tabs fade-in-up" style="animation-delay: 0.2s">
       <button class="stage-tab active" onclick="setStage('secondary', this)"><i class="ti ti-school" aria-hidden="true"></i> الثانوية</button>
       <button class="stage-tab" onclick="setStage('middle', this)"><i class="ti ti-building" aria-hidden="true"></i> المتوسطة</button>
       <button class="stage-tab" onclick="setStage('upper-primary', this)"><i class="ti ti-books" aria-hidden="true"></i> الابتدائية العليا</button>
@@ -114,9 +126,9 @@
       </div>
     </div>
 
-    <div class="grades-card">
+    <div class="grades-card fade-in-up" style="animation-delay: 0.2s">
       <div class="grades-head">
-        <div class="grades-head-title"><i class="ti ti-chart-dots" aria-hidden="true"></i> تقرير درجات البرامج</div>
+        <div class="grades-head-title"><i class="ti ti-medal" aria-hidden="true"></i> تقرير درجات البرامج</div>
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:11px;color:rgba(255,255,255,0.72)">Google Looker Studio</span>
           <div style="width:9px;height:9px;border-radius:50%;background:#5DCAA5"></div>

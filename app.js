@@ -69,6 +69,35 @@ document.addEventListener("DOMContentLoaded", () => {
   if (minutes > 0) {
     setInterval(loadEverything, minutes * 60 * 1000);
   }
+
+  // Theme Toggle Logic
+  const themeToggle = document.getElementById('theme-toggle');
+  const themeIcon = document.getElementById('theme-icon');
+  
+  function updateThemeIcon() {
+    if (document.documentElement.getAttribute('data-theme') === 'dark') {
+      themeIcon.className = 'ti ti-sun';
+      themeIcon.style.transform = 'rotate(180deg)';
+    } else {
+      themeIcon.className = 'ti ti-moon';
+      themeIcon.style.transform = 'rotate(0deg)';
+    }
+  }
+
+  if (themeToggle) {
+    updateThemeIcon(); // Initial state
+    themeToggle.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      if (current === 'dark') {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+      }
+      updateThemeIcon();
+    });
+  }
 });
 
 async function loadEverything() {
@@ -159,7 +188,7 @@ function renderHomeGrid(items) {
     const timing = TIMING_META[p.timing] || TIMING_META.current;
 
     return `
-      <div class="program-card ${idx === 0 ? "featured" : ""}" onclick="openProgramModal('${escapeHtml(p.id)}')">
+      <div class="program-card ${idx === 0 ? "featured" : ""}" style="animation-delay: ${0.1 + (idx * 0.1)}s" onclick="openProgramModal('${escapeHtml(p.id)}')">
         <div class="card-badges">
           ${badgeHtml("new", "جديد")}
           <div class="badge badge-${p.timing === "current" ? "current" : p.timing === "upcoming" ? "coming" : "past"}">
@@ -349,8 +378,8 @@ function renderStages() {
 function renderMini(containerId, list, emptyMsg) {
   const el = document.getElementById(containerId);
   if (!list.length) { el.innerHTML = `<div class="empty-state">${emptyMsg}</div>`; return; }
-  el.innerHTML = list.map(p => `
-    <div class="mini-card" onclick="openProgramModal('${escapeHtml(p.id)}')">
+  el.innerHTML = list.map((p, idx) => `
+    <div class="mini-card" style="animation-delay: ${0.1 + (idx * 0.08)}s" onclick="openProgramModal('${escapeHtml(p.id)}')">
       <div class="mini-top">
         <div class="${ICON_CLASS[p.type] || "mini-icon edu"}"><i class="ti ${p.icon || TYPE_ICONS[p.type] || "ti-book"}" aria-hidden="true"></i></div>
         <span class="tag" style="font-size:10px">${TYPE_LABELS[p.type] || p.type}</span>
