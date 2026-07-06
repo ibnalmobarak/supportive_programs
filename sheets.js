@@ -91,14 +91,27 @@ const SheetsAPI = (() => {
       timing: (r.timing || "current").trim(),
       isNew: /^(true|1|yes|نعم)$/i.test(r.is_new || ""),
       date: r.date || "",
+      time: (r.time || "").trim(),
+      platform: (r.platform || "").trim(),
       description: r.description || "",
       conditions: (r.conditions || "")
         .split(/;|\n/)
         .map(c => c.trim())
         .filter(Boolean),
+      participateLink: normalizeUrl(r.participate_link || r.participate || ""),
+      notes: (r.notes || "").trim(),
+      points: (r.points || "").trim(),
       youtubeId: extractYoutubeId(r.youtube_id || r.youtube_url || ""),
       icon: r.icon || "",
     }));
+  }
+
+  // Adds https:// to bare domains/paths so links always work as absolute URLs.
+  function normalizeUrl(raw) {
+    const v = (raw || "").trim();
+    if (!v) return "";
+    if (/^https?:\/\//i.test(v)) return v;
+    return `https://${v}`;
   }
 
   async function fetchStats() {
