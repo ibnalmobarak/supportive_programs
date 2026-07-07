@@ -296,6 +296,10 @@ a:focus-visible, button:focus-visible,
   background-position: center;
   cursor: pointer;
 }
+/* Slides with no linked program (data-id empty) aren't clickable */
+.swiper-slide[data-id=""] {
+  cursor: default;
+}
 
 .swiper-slide-overlay {
   width: 100%;

@@ -17,10 +17,13 @@ window.SITE_CONFIG = {
   // كل تبويب (Sheet tab) له رقم GID يظهر في الرابط بعد gid=
   // Each tab has a GID number visible in the tab's URL after gid=
   SHEETS: {
-    // تبويب البرامج: id, title, type, stage, timing, is_new, date, description, conditions, youtube_id
+    // تبويب البرامج: id, title, type, stage, timing, is_new, date, description, conditions, preview_url
     PROGRAMS_GID: "0",
     // تبويب الإحصائيات: key, value  (اختياري)
     STATS_GID: "1917337504",
+    // تبويب صور المتصفح (Swiper) في الرئيسية: image_url, title, date, time, points, program_id  (اختياري)
+    // إن لم يوجد هذا التبويب، سيعتمد المتصفح تلقائياً على البرامج المعلّمة "جديد" وصورها (preview_url)
+    SWIPER_GID: "951759987",
   },
 
   // ── Looker Studio ──────────────────────────────────────────────

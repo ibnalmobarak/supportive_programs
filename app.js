@@ -51,6 +51,7 @@ function platformIcon(platform) {
 }
 
 let ALL_PROGRAMS = [];
+let SWIPER_ITEMS = null; // from the dedicated Swiper GID tab, if configured
 let CURRENT_STAGE = "secondary";
 
 // Home image-swipe carousel state
@@ -112,7 +113,12 @@ async function loadPrograms() {
   renderSkeleton("home-cards", 3);
 
   try {
-    ALL_PROGRAMS = await SheetsAPI.fetchPrograms();
+    const [programs, swiperItems] = await Promise.all([
+      SheetsAPI.fetchPrograms(),
+      SheetsAPI.fetchSwiperItems(),
+    ]);
+    ALL_PROGRAMS = programs;
+    SWIPER_ITEMS = swiperItems; // null if the tab isn't configured/reachable
     setStatus("home-status", "live", "البيانات محدّثة مباشرة من Google Sheets", false, true);
     setStatus("stages-status", "live", "البيانات محدّثة مباشرة من Google Sheets", false, true);
     renderHome();
@@ -172,12 +178,25 @@ function renderEmpty(containerId, message) {
 }
 
 // ── HOME ──────────────────────────────────────────────────────
-// Home now shows only programs marked is_new = TRUE in the sheet: a swipeable
-// image carousel up top, and the same set as full cards below.
+// The full-card grid below always shows programs marked is_new = TRUE.
+// The swipeable image carousel up top prefers the dedicated Swiper tab
+// (SWIPER_GID) when configured; otherwise it falls back to the same
+// is_new programs, using their preview_url image when available.
 function renderHome() {
-  const items = ALL_PROGRAMS.filter(p => p.isNew);
-  renderHomeSwiper(items);
-  renderHomeGrid(items);
+  const newItems = ALL_PROGRAMS.filter(p => p.isNew);
+  const swiperItems = (SWIPER_ITEMS && SWIPER_ITEMS.length)
+    ? SWIPER_ITEMS
+    : newItems.map(p => ({
+        title: p.title,
+        date: p.date,
+        time: p.time,
+        points: p.points,
+        programId: p.id,
+        preview: p.preview,
+        type: p.type,
+      }));
+  renderHomeSwiper(swiperItems);
+  renderHomeGrid(newItems);
 }
 
 function renderHomeGrid(items) {
@@ -200,7 +219,8 @@ function renderHomeGrid(items) {
         <div class="card-tags">
           <span class="tag"><i class="ti ${TYPE_ICONS[p.type] || "ti-tag"}" aria-hidden="true"></i> ${TYPE_LABELS[p.type] || p.type}</span>
           ${p.points ? `<span class="tag tag-points"><i class="ti ti-star" aria-hidden="true"></i> ${escapeHtml(p.points)} نقطة</span>` : ""}
-          ${p.youtubeId ? `<span class="tag video-tag"><i class="ti ti-brand-youtube" aria-hidden="true"></i> فيديو</span>` : ""}
+          ${p.preview.kind === "youtube" ? `<span class="tag video-tag"><i class="ti ti-brand-youtube" aria-hidden="true"></i> فيديو</span>` : ""}
+          ${p.preview.kind === "image" || p.preview.kind === "drive" ? `<span class="tag video-tag"><i class="ti ti-photo" aria-hidden="true"></i> صورة</span>` : ""}
         </div>
         <div class="card-footer">
           <span class="card-date"><i class="ti ti-calendar" aria-hidden="true"></i> ${escapeHtml(p.date)}</span>
@@ -217,8 +237,9 @@ function badgeHtml(kind, label) {
 }
 
 // ── HOME IMAGE SWIPER ─────────────────────────────────────────
-// Touch/drag-friendly carousel. Uses each program's YouTube thumbnail when
-// available, otherwise a type-colored gradient placeholder.
+// Touch/drag-friendly carousel. Uses each slide's preview image (YouTube
+// thumbnail, Google Drive thumbnail, or direct image URL) when available,
+// otherwise a type-colored gradient placeholder.
 function renderHomeSwiper(items) {
   const wrap = document.getElementById("home-swiper-wrap");
   const hint = document.getElementById("swiper-hint");
@@ -258,17 +279,19 @@ function renderHomeSwiper(items) {
 }
 
 function swiperSlideHtml(p) {
-  const bg = p.youtubeId
-    ? `background-image:url('https://img.youtube.com/vi/${p.youtubeId}/hqdefault.jpg')`
+  const imageUrl = p.preview && p.preview.imageUrl;
+  const bg = imageUrl
+    ? `background-image:url('${imageUrl}')`
     : `background:${TYPE_GRADIENTS[p.type] || TYPE_GRADIENTS.edu}`;
+  const clickableId = p.programId || "";
 
   return `
-    <div class="swiper-slide" data-id="${escapeHtml(p.id)}" style="${bg}">
+    <div class="swiper-slide" data-id="${escapeHtml(clickableId)}" style="${bg}">
       <div class="swiper-slide-overlay">
         <span class="badge badge-new"><i class="ti ti-sparkles" aria-hidden="true"></i> جديد</span>
         <div class="swiper-slide-title">${escapeHtml(p.title)}</div>
         <div class="swiper-slide-meta">
-          <span><i class="ti ti-calendar" aria-hidden="true"></i> ${escapeHtml(p.date)}</span>
+          ${p.date ? `<span><i class="ti ti-calendar" aria-hidden="true"></i> ${escapeHtml(p.date)}</span>` : ""}
           ${p.time ? `<span><i class="ti ti-clock" aria-hidden="true"></i> ${escapeHtml(p.time)}</span>` : ""}
           ${p.points ? `<span><i class="ti ti-star" aria-hidden="true"></i> ${escapeHtml(p.points)} نقطة</span>` : ""}
         </div>
@@ -347,7 +370,7 @@ function attachSwiperEvents() {
   track.addEventListener("click", e => {
     if (SWIPER_SUPPRESS_CLICK) return;
     const slide = e.target.closest(".swiper-slide");
-    if (slide && slide.dataset.id) openProgramModal(slide.dataset.id);
+    if (slide && slide.dataset.id) openProgramModal(slide.dataset.id); // no-op if slide has no linked program
   });
 }
 
@@ -388,27 +411,36 @@ function renderMini(containerId, list, emptyMsg) {
       <div class="mini-date">
         <i class="ti ti-calendar" aria-hidden="true"></i> ${escapeHtml(p.date)}
         ${p.points ? `<span style="margin-inline-start:6px"><i class="ti ti-star" aria-hidden="true"></i> ${escapeHtml(p.points)}</span>` : ""}
-        ${p.youtubeId ? `<i class="ti ti-brand-youtube" style="margin-inline-start:5px;color:var(--red-mid)" aria-hidden="true"></i>` : ""}
+        ${p.preview.kind === "youtube" ? `<i class="ti ti-brand-youtube" style="margin-inline-start:5px;color:var(--red-mid)" aria-hidden="true"></i>` : ""}
+        ${(p.preview.kind === "image" || p.preview.kind === "drive") ? `<i class="ti ti-photo" style="margin-inline-start:5px;color:var(--gray-hint)" aria-hidden="true"></i>` : ""}
       </div>
     </div>
   `).join("");
 }
 
-function getImageUrl(url) {
-  if (!url) return "";
+// Renders the modal's preview block (video embed or image) based on the
+// resolved preview_url kind: "youtube" | "drive" | "image" | "" (none).
+function previewHtml(p) {
+  const preview = p.preview;
+  if (!preview || !preview.kind) return "";
 
-  // Google Drive shared link
-  const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (match) {
-    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1200`;
-    // Alternatively:
-    //return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  if (preview.kind === "youtube") {
+    return `
+    <div class="modal-section">
+      <h4><i class="ti ti-brand-youtube"></i> فيديو تعريفي</h4>
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/${preview.id}" title="${escapeHtml(p.title)}"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
+      </div>
+    </div>`;
   }
 
-  // Already a normal image URL
-  return url;
+  // drive or plain image — both render as a static image
+  return `
+    <div class="modal-image">
+      <img src="${escapeHtml(preview.imageUrl)}" alt="${escapeHtml(p.title)}" loading="lazy">
+    </div>`;
 }
-
 
 // ── MODAL ─────────────────────────────────────────────────────
 function openProgramModal(id) {
@@ -427,20 +459,7 @@ function openProgramModal(id) {
       ${p.points ? `<span class="badge badge-points"><i class="ti ti-star" style="font-size:11px"></i> ${escapeHtml(p.points)} نقطة</span>` : ""}
     </div>
   
-  ${p.youtubeId ? !p.youtubeId.includes('drive.google') ? `
-    <div class="modal-section">
-      <h4><i class="ti ti-brand-youtube"></i> فيديو تعريفي</h4>
-      <div class="video-wrap">
-        <iframe src="https://www.youtube.com/embed/${p.youtubeId}" title="${escapeHtml(p.title)}"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe>
-      </div>
-    </div>` : `
-    <div class="modal-image">
-  <img src="${getImageUrl(p.youtubeId)}"
-       alt="${escapeHtml(p.title)}"
-       loading="lazy">
-       ${getImageUrl(p.youtubeId)}
-  </div>` : ""}
+  ${previewHtml(p)}
 
     <div class="modal-section">
       <h4><i class="ti ti-info-circle"></i> شرح البرنامج</h4>
