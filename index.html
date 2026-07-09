@@ -70,8 +70,8 @@
     <div class="section-header fade-in-up" style="animation-delay: 0.1s">
       <div class="section-icon"><i class="ti ti-sparkles" aria-hidden="true"></i></div>
       <div class="section-header-text">
-        <div class="section-title">البرامج العامة</div>
-        <div class="section-sub">هنا ستجد البرامج العامة المقامة لجميع المراحل</div>
+        <div class="section-title">الإعلانات والبرامج العامة</div>
+        <div class="section-sub">هنا ستجد الإعلانات العامة والبرامج العامة المقامة لجميع المراحل</div>
       </div>
     </div>
 
@@ -120,7 +120,15 @@
 <!-- ══════════════════ GRADES ══════════════════ -->
 <section id="sec-grades" style="display:none" class="main-content">
   <div class="page">
+
     <div class="section-header">
+      <div class="section-icon"><i class="ti ti-stopwatch" aria-hidden="true"></i></div>
+      <div class="section-header-text">
+        <div class="section-title">قريبا...</div>
+      </div>
+    </div>
+
+    <!-- <div class="section-header">
       <div class="section-icon"><i class="ti ti-chart-bar" aria-hidden="true"></i></div>
       <div class="section-header-text">
         <div class="section-title">لوحة النقاط</div>
@@ -164,7 +172,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </section>
 
@@ -184,6 +192,12 @@
       <img src="https://drive.google.com/file/d/10eeulHOCUsiuqlcn3vRE2lqH4ActcGIa/view?usp=sharing" alt="">
     </div>
   </div>
+</div>
+
+<!-- ══════════════════ LIGHTBOX (fullscreen swiper image) ══════════════════ -->
+<div class="lightbox-overlay" id="lightbox-overlay" onclick="if(event.target===this)closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="إغلاق"><i class="ti ti-x"></i></button>
+  <img class="lightbox-img" id="lightbox-img" src="" alt="">
 </div>
 
 

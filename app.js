@@ -64,7 +64,7 @@ let SWIPER_SUPPRESS_CLICK = false;
 // ── BOOTSTRAP ──────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
   loadEverything();
-  document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") { closeModal(); closeLightbox(); } });
 
   const minutes = Number(window.SITE_CONFIG.AUTO_REFRESH_MINUTES || 0);
   if (minutes > 0) {
@@ -183,10 +183,18 @@ function renderEmpty(containerId, message) {
 // (SWIPER_GID) when configured; otherwise it falls back to the same
 // is_new programs, using their preview_url image when available.
 function renderHome() {
-  const newItems = ALL_PROGRAMS.filter(p => p.stage == 'all');
+  const newItems = ALL_PROGRAMS.filter(p => p.isNew);
   const swiperItems = (SWIPER_ITEMS && SWIPER_ITEMS.length)
     ? SWIPER_ITEMS
-    : [];
+    : newItems.map(p => ({
+        title: p.title,
+        date: p.date,
+        time: p.time,
+        points: p.points,
+        programId: p.id,
+        preview: p.preview,
+        type: p.type,
+      }));
   renderHomeSwiper(swiperItems);
   renderHomeGrid(newItems);
 }
@@ -197,13 +205,14 @@ function renderHomeGrid(items) {
 
   el.innerHTML = items.map((p, idx) => {
     const timing = TIMING_META[p.timing] || TIMING_META.current;
+    const isLive = p.timing === "current";
 
     return `
-      <div class="program-card ${idx === 0 ? "featured" : ""}" style="animation-delay: ${0.1 + (idx * 0.1)}s" onclick="openProgramModal('${escapeHtml(p.id)}')">
+      <div class="program-card ${idx === 0 ? "featured" : ""} ${isLive ? "is-live" : ""}" style="animation-delay: ${0.1 + (idx * 0.1)}s" onclick="openProgramModal('${escapeHtml(p.id)}')">
         <div class="card-badges">
           ${badgeHtml("new", "جديد")}
-          <div class="badge badge-${p.timing === "current" ? "current" : p.timing === "upcoming" ? "coming" : "past"}">
-            <i class="ti ${timing.icon}" aria-hidden="true"></i> ${timing.label}
+          <div class="badge badge-${p.timing === "current" ? "current" : p.timing === "upcoming" ? "coming" : "past"} ${isLive ? "badge-live" : ""}">
+            ${isLive ? liveDotHtml() : `<i class="ti ${timing.icon}" aria-hidden="true"></i>`} ${timing.label}
           </div>
         </div>
         <div class="card-title">${escapeHtml(p.title)}</div>
@@ -221,6 +230,11 @@ function renderHomeGrid(items) {
       </div>
     `;
   }).join("");
+}
+
+// Small pulsing dot used to flag anything currently running/live.
+function liveDotHtml() {
+  return `<span class="live-dot" aria-hidden="true"></span>`;
 }
 
 function badgeHtml(kind, label) {
@@ -278,7 +292,7 @@ function swiperSlideHtml(p) {
   const clickableId = p.programId || "";
 
   return `
-    <div class="swiper-slide" data-id="${escapeHtml(clickableId)}" style="${bg}">
+    <div class="swiper-slide" data-id="${escapeHtml(clickableId)}" data-image="${escapeHtml(imageUrl || "")}" style="${bg}">
       <div class="swiper-slide-overlay">
         <span class="badge badge-new"><i class="ti ti-sparkles" aria-hidden="true"></i> جديد</span>
         <div class="swiper-slide-title">${escapeHtml(p.title)}</div>
@@ -352,7 +366,16 @@ function attachSwiperEvents() {
     restartAutoplay();
   };
 
-  el.addEventListener("pointerdown", e => { try { el.setPointerCapture(e.pointerId); } catch (_) {} onDown(e.clientX, e.pointerId); });
+  // Arrows/dots are controls, not drag surfaces — never start a drag from
+  // them, or their own onclick handlers get swallowed by pointer capture
+  // (this is what broke arrow/dot clicks and the lightbox on desktop mouse).
+  const isControl = (target) => !!target.closest(".swiper-arrow, .swiper-dot");
+
+  el.addEventListener("pointerdown", e => {
+    if (isControl(e.target)) return;
+    try { el.setPointerCapture(e.pointerId); } catch (_) {}
+    onDown(e.clientX, e.pointerId);
+  });
   el.addEventListener("pointermove", e => onMove(e.clientX));
   el.addEventListener("pointerup", onUp);
   el.addEventListener("pointercancel", onUp);
@@ -361,8 +384,14 @@ function attachSwiperEvents() {
 
   track.addEventListener("click", e => {
     if (SWIPER_SUPPRESS_CLICK) return;
+    if (isControl(e.target)) return; // let the arrow/dot's own onclick handle it
     const slide = e.target.closest(".swiper-slide");
-    if (slide && slide.dataset.id) openProgramModal(slide.dataset.id); // no-op if slide has no linked program
+    if (!slide) return;
+    if (slide.dataset.id) {
+      openProgramModal(slide.dataset.id); // slide is linked to a program
+    } else if (slide.dataset.image) {
+      openLightbox(slide.dataset.image); // unlinked slide — show fullscreen image
+    }
   });
 }
 
@@ -393,11 +422,13 @@ function renderStages() {
 function renderMini(containerId, list, emptyMsg) {
   const el = document.getElementById(containerId);
   if (!list.length) { el.innerHTML = `<div class="empty-state">${emptyMsg}</div>`; return; }
-  el.innerHTML = list.map((p, idx) => `
-    <div class="mini-card" style="animation-delay: ${0.1 + (idx * 0.08)}s" onclick="openProgramModal('${escapeHtml(p.id)}')">
+  el.innerHTML = list.map((p, idx) => {
+    const isLive = p.timing === "current";
+    return `
+    <div class="mini-card ${isLive ? "is-live" : ""}" style="animation-delay: ${0.1 + (idx * 0.08)}s" onclick="openProgramModal('${escapeHtml(p.id)}')">
       <div class="mini-top">
         <div class="${ICON_CLASS[p.type] || "mini-icon edu"}"><i class="ti ${p.icon || TYPE_ICONS[p.type] || "ti-book"}" aria-hidden="true"></i></div>
-        <span class="tag" style="font-size:10px">${TYPE_LABELS[p.type] || p.type}</span>
+        ${isLive ? `<span class="live-tag">${liveDotHtml()} جارٍ الآن</span>` : `<span class="tag" style="font-size:10px">${TYPE_LABELS[p.type] || p.type}</span>`}
       </div>
       <div class="mini-title">${escapeHtml(p.title)}</div>
       <div class="mini-date">
@@ -407,7 +438,8 @@ function renderMini(containerId, list, emptyMsg) {
         ${(p.preview.kind === "image" || p.preview.kind === "drive") ? `<i class="ti ti-photo" style="margin-inline-start:5px;color:var(--gray-hint)" aria-hidden="true"></i>` : ""}
       </div>
     </div>
-  `).join("");
+  `;
+  }).join("");
 }
 
 // Renders the modal's preview block (video embed or image) based on the
@@ -488,6 +520,24 @@ function closeModal() {
   // stop any playing video by clearing the iframe src
   const frame = document.querySelector(".video-wrap iframe");
   if (frame) frame.src = frame.src;
+}
+
+// ── LIGHTBOX (fullscreen swiper image) ────────────────────────
+// Used for swiper slides that aren't linked to a program (no program_id):
+// tapping the image shows it fullscreen instead of doing nothing.
+function openLightbox(imageUrl) {
+  if (!imageUrl) return;
+  stopAutoplay();
+  document.getElementById("lightbox-img").src = imageUrl;
+  document.getElementById("lightbox-overlay").classList.add("open");
+}
+
+function closeLightbox() {
+  const overlay = document.getElementById("lightbox-overlay");
+  if (!overlay) return;
+  overlay.classList.remove("open");
+  document.getElementById("lightbox-img").src = "";
+  restartAutoplay();
 }
 
 // ── LOOKER STUDIO (GRADES) ───────────────────────────────────
