@@ -506,7 +506,7 @@ function openProgramModal(id) {
 
     ${p.participateLink ? `
     <a class="reg-btn" href="${escapeHtml(p.participateLink)}" target="_blank" rel="noopener noreferrer">
-      <i class="ti ti-send"></i> المشاركة في البرنامج
+      <i class="ti ti-send"></i> ${(p.participateLink.includes('drive.google') ? 'معاينة مرفقات البرنامج' : 'المشاركة في البرنامج')}
     </a>` : `
     <button class="reg-btn" disabled>
       <i class="ti ti-link-off"></i> رابط المشاركة غير متاح حالياً
