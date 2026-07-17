@@ -431,6 +431,28 @@ a:focus-visible, button:focus-visible,
 }
 .tag i { font-size: 11px; }
 .tag.video-tag { color: var(--red-dark); background: var(--red-pale); }
+.tag.pdf-tag   { color: var(--red-dark); background: var(--red-pale); }
+.tag.drive-tag { color: var(--blue-dark); background: var(--blue-pale); }
+
+/* ── INLINE LINKS (auto-detected URLs in text) ── */
+.inline-link {
+  color: #2563EB;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  word-break: break-all;
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+.inline-link:hover {
+  color: #1D4ED8;
+  text-decoration-thickness: 2px;
+}
+[data-theme="dark"] .inline-link {
+  color: #60A5FA;
+}
+[data-theme="dark"] .inline-link:hover {
+  color: #93BBFD;
+}
 .card-footer {
   display: flex; justify-content: space-between; align-items: center;
   padding-top: 10px; border-top: 1px solid var(--gray-border);
@@ -668,6 +690,34 @@ a:focus-visible, button:focus-visible,
 }
 .video-wrap iframe {
   position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+}
+
+/* ── DRIVE FILE PREVIEW ── */
+.drive-preview-wrap {
+  position: relative; width: 100%; padding-top: 75%; /* 4:3 */
+  border-radius: var(--radius-md); overflow: hidden;
+  background: var(--gray-surface); margin-bottom: 8px;
+  border: 1px solid var(--gray-border);
+}
+.drive-preview-wrap iframe {
+  position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+}
+.drive-external-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; color: #2563EB;
+  text-decoration: none;
+  padding: 6px 0;
+  transition: color 0.15s;
+}
+.drive-external-link:hover {
+  color: #1D4ED8;
+  text-decoration: underline;
+}
+[data-theme="dark"] .drive-external-link {
+  color: #60A5FA;
+}
+[data-theme="dark"] .drive-external-link:hover {
+  color: #93BBFD;
 }
 
 /* Grow the main content container to take up all remaining empty space */
