@@ -3,7 +3,7 @@
  * Renders and controls the program-detail modal dialog.
  */
 
-import { $id, escapeHtml } from "../utils/dom.js";
+import { $id, escapeHtml, formatText } from "../utils/dom.js";
 import { STAGE_LABELS, TYPE_LABELS, platformIcon } from "../utils/constants.js";
 
 export class ProgramModal {
@@ -39,21 +39,21 @@ export class ProgramModal {
 
       <div class="modal-section">
         <h4><i class="ti ti-info-circle"></i> شرح البرنامج</h4>
-        <p>${escapeHtml(p.description) || "سيتم إضافة الوصف قريباً."}</p>
+        <p>${formatText(p.description) || "سيتم إضافة الوصف قريباً."}</p>
       </div>
 
       ${p.conditions.length ? `
       <div class="modal-section">
         <h4><i class="ti ti-list-check"></i> شروط الاشتراك</h4>
         <ul class="cond-list">
-          ${p.conditions.map(c => `<li><span class="cond-dot"></span>${escapeHtml(c)}</li>`).join("")}
+          ${p.conditions.map(c => `<li><span class="cond-dot"></span>${formatText(c)}</li>`).join("")}
         </ul>
       </div>` : ""}
 
       ${p.notes ? `
       <div class="modal-section">
         <h4><i class="ti ti-notes"></i> معلومات أخرى</h4>
-        <p>${escapeHtml(p.notes)}</p>
+        <p>${formatText(p.notes)}</p>
       </div>` : ""}
 
       ${p.participateLink ? `
@@ -69,13 +69,17 @@ export class ProgramModal {
 
   close() {
     $id(this.overlayId).classList.remove("open");
-    // stop any playing video by clearing the iframe src
-    const frame = document.querySelector(".video-wrap iframe");
-    if (frame) frame.src = frame.src;
+    // stop any playing video / Drive preview by clearing the iframe src
+    const videoFrame = document.querySelector(".video-wrap iframe");
+    if (videoFrame) videoFrame.src = videoFrame.src;
+    const driveFrame = document.querySelector(".drive-preview-wrap iframe");
+    if (driveFrame) driveFrame.src = "";
   }
 
-  // Renders the modal's preview block (video embed or image) based on the
-  // resolved preview_url kind: "youtube" | "drive" | "image" | "" (none).
+  // Renders the modal's preview block based on the resolved preview_url kind:
+  //   "youtube" → embedded YouTube player
+  //   "drive"   → Google Drive /preview iframe (works for PDFs, images, docs, etc.)
+  //   "image"   → static <img> tag
   #previewHtml(p) {
     const preview = p.preview;
     if (!preview || !preview.kind) return "";
@@ -91,10 +95,27 @@ export class ProgramModal {
       </div>`;
     }
 
-    // drive or plain image — both render as a static image
+    // Google Drive file — use the universal /preview iframe
+    // Works for PDFs, images, documents, presentations, etc.
+    if (preview.kind === "drive") {
+      return `
+      <div class="modal-section">
+        <h4><i class="ti ti-file-description"></i> معاينة الملف</h4>
+        <div class="drive-preview-wrap">
+          <iframe src="https://drive.google.com/file/d/${preview.id}/preview" title="${escapeHtml(p.title)}"
+            allow="autoplay" loading="lazy"></iframe>
+        </div>
+        <a class="drive-external-link" href="https://drive.google.com/file/d/${preview.id}/view" target="_blank" rel="noopener noreferrer">
+          <i class="ti ti-external-link"></i> فتح الملف في نافذة جديدة
+        </a>
+      </div>`;
+    }
+
+    // plain image URL — render as a static image
     return `
       <div class="modal-image">
         <img src="${escapeHtml(preview.imageUrl)}" alt="${escapeHtml(p.title)}" loading="lazy">
       </div>`;
   }
 }
+
