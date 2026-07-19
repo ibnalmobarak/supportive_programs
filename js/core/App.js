@@ -34,7 +34,9 @@ export class App {
       onClose: () => this.swiper.restartAutoplay(),
     });
 
-    this.cards = new ProgramCards("home-cards", (id) => this.modal.open(this.state.findProgramById(id)));
+    this.cards = new ProgramCards((id) =>
+      this.modal.open(this.state.findProgramById(id)),
+    );
 
     this.swiper = new HomeSwiper({
       wrapId: "home-swiper-wrap",
@@ -45,17 +47,25 @@ export class App {
 
     this.stageTabs = new StageTabs({
       onOpenProgram: (id) => this.modal.open(this.state.findProgramById(id)),
-      onStageChange: (stage) => { this.state.setStage(stage); this.stageTabs.render(this.state.programs, this.state.currentStage); },
+      onStageChange: (stage) => {
+        this.state.setStage(stage);
+        this.stageTabs.render(this.state.programs, this.state.currentStage);
+      },
     });
 
     this.looker = new LookerEmbed(config);
-    this.nav = new Navigation((sectionId) => { if (sectionId === "grades") this.looker.init(); });
+    this.nav = new Navigation((sectionId) => {
+      if (sectionId === "grades") this.looker.init();
+    });
     this.theme = new ThemeToggle();
   }
 
   async start() {
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape") { this.modal.close(); this.lightbox.close(); }
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        this.modal.close();
+        this.lightbox.close();
+      }
     });
 
     const minutes = Number(this.config.AUTO_REFRESH_MINUTES || 0);
@@ -83,14 +93,28 @@ export class App {
       ]);
       this.state.setPrograms(programs);
       this.state.setSwiperItems(swiperItems); // null if the tab isn't configured/reachable
-      this.homeStatus.set("live", "البيانات محدّثة مباشرة من Google Sheets", false, true);
-      this.stagesStatus.set("live", "البيانات محدّثة مباشرة من Google Sheets", false, true);
+      this.homeStatus.set(
+        "live",
+        "البيانات محدّثة مباشرة من Google Sheets",
+        false,
+        true,
+      );
+      this.stagesStatus.set(
+        "live",
+        "البيانات محدّثة مباشرة من Google Sheets",
+        false,
+        true,
+      );
       this.renderHome();
       this.stageTabs.render(this.state.programs, this.state.currentStage);
     } catch (err) {
       console.error(err);
       this.homeStatus.set("error", `تعذّر تحميل البرامج: ${err.message}`, true);
-      this.stagesStatus.set("error", `تعذّر تحميل البرامج: ${err.message}`, true);
+      this.stagesStatus.set(
+        "error",
+        `تعذّر تحميل البرامج: ${err.message}`,
+        true,
+      );
       this.cards.renderEmpty("تعذّر تحميل البرامج حالياً");
     }
   }
@@ -105,7 +129,10 @@ export class App {
       "stat-participation": stats.participation_rate,
     };
     Object.entries(map).forEach(([id, val]) => {
-      if (val) { const el = $id(id); if (el) el.textContent = val; }
+      if (val) {
+        const el = $id(id);
+        if (el) el.textContent = val;
+      }
     });
   }
 
@@ -114,18 +141,21 @@ export class App {
   // (SWIPER_GID) when configured; otherwise it falls back to the same
   // is_new programs, using their preview_url image when available.
   renderHome() {
-    const generalPrograms = this.state.programs.filter(p => p.stage === "all");
-    const swiperItems = (this.state.swiperItems && this.state.swiperItems.length)
-      ? this.state.swiperItems
-      : generalPrograms.map(p => ({
-          title: p.title,
-          date: p.date,
-          time: p.time,
-          points: p.points,
-          programId: p.id,
-          preview: p.preview,
-          type: p.type,
-        }));
+    const generalPrograms = this.state.programs.filter(
+      (p) => p.stage === "all",
+    );
+    const swiperItems =
+      this.state.swiperItems && this.state.swiperItems.length
+        ? this.state.swiperItems
+        : generalPrograms.map((p) => ({
+            title: p.title,
+            date: p.date,
+            time: p.time,
+            points: p.points,
+            programId: p.id,
+            preview: p.preview,
+            type: p.type,
+          }));
     this.swiper.render(swiperItems);
     this.cards.render(generalPrograms);
   }

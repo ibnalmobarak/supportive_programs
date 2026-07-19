@@ -1,47 +1,61 @@
 /**
  * js/components/ProgramCards.js
- * Renders the "is_new" program cards grid on the home page.
+ * Renders the "is_new" program cards grid on the home page, split into
+ * three timing groups (current → upcoming → past), each in its own
+ * container with a timeline label above it — the same pattern used by
+ * the Stages section's mini-card lists.
  */
 
 import { $id, escapeHtml } from "../utils/dom.js";
 import { TYPE_LABELS, TYPE_ICONS, TIMING_META } from "../utils/constants.js";
 
+const GROUPS = [
+  { timing: "current", containerId: "home-cards-current", emptyMsg: "لا توجد برامج جارية حالياً" },
+  { timing: "upcoming", containerId: "home-cards-upcoming", emptyMsg: "لا توجد برامج قادمة حالياً" },
+  { timing: "past", containerId: "home-cards-past", emptyMsg: "لا توجد برامج سابقة مسجّلة" },
+];
+
 export class ProgramCards {
-  /**
-   * @param {string} containerId
-   * @param {(id: string) => void} onOpenProgram called with a program id when a card is clicked
-   */
-  constructor(containerId, onOpenProgram) {
-    this.containerId = containerId;
+  constructor(onOpenProgram) {
     this.onOpenProgram = onOpenProgram;
   }
 
   renderEmpty(message) {
-    const el = $id(this.containerId);
-    if (!el) return;
-    el.innerHTML = `<div class="empty-state"><i class="ti ti-inbox" style="font-size:22px;display:block;margin-bottom:8px"></i>${message}</div>`;
+    GROUPS.forEach(g => {
+      const el = $id(g.containerId);
+      if (!el) return;
+      el.innerHTML = `<div class="empty-state"><i class="ti ti-inbox" style="font-size:22px;display:block;margin-bottom:8px"></i>${message}</div>`;
+    });
   }
 
   renderSkeleton(count) {
-    const el = $id(this.containerId);
-    if (!el) return;
-    el.innerHTML = Array.from({ length: count }).map(() => `
-      <div class="skeleton-card">
-        <div class="skeleton-line w40" style="height:18px;margin-bottom:14px"></div>
-        <div class="skeleton-line w90"></div>
-        <div class="skeleton-line w60"></div>
-      </div>
-    `).join("");
+    GROUPS.forEach(g => {
+      const el = $id(g.containerId);
+      if (!el) return;
+      el.innerHTML = Array.from({ length: count }).map(() => `
+        <div class="skeleton-card">
+          <div class="skeleton-line w40" style="height:18px;margin-bottom:14px"></div>
+          <div class="skeleton-line w90"></div>
+          <div class="skeleton-line w60"></div>
+        </div>
+      `).join("");
+    });
   }
 
   render(items) {
-    const el = $id(this.containerId);
+    GROUPS.forEach(g => {
+      const groupItems = items.filter(p => p.timing === g.timing);
+      this.#renderGroup(g.containerId, groupItems, g.emptyMsg);
+    });
+  }
+
+  #renderGroup(containerId, items, emptyMsg) {
+    const el = $id(containerId);
     if (!el) return;
-    if (!items.length) { this.renderEmpty("لا توجد برامج جديدة معلنة حالياً"); return; }
+    if (!items.length) { el.innerHTML = `<div class="empty-state">${emptyMsg}</div>`; return; }
 
     el.innerHTML = items.map((p, idx) => this.#cardHtml(p, idx)).join("");
 
-    // Delegate clicks rather than relying on inline onclick strings.
     el.querySelectorAll(".program-card").forEach((card, idx) => {
       card.addEventListener("click", () => this.onOpenProgram(items[idx].id));
     });
