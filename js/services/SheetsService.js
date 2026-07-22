@@ -104,4 +104,25 @@ export class SheetsService {
       return null; // optional tab — silently fall back
     }
   }
+
+  /**
+   * Fetches the optional Settings tab — a single-row sheet with a
+   * `grades_ready` boolean column controlling whether the Grades section
+   * shows the live Looker Studio report or an "under processing" message.
+   * Returns null if the tab isn't configured/reachable (defaults to showing the report).
+   */
+  async fetchSettings() {
+    const gid = this.config.SHEETS.SETTINGS_GID;
+    if (!gid) return null;
+    try {
+      const rows = await this.#fetchTab(gid);
+      if (!rows.length) return null;
+      const row = rows[0];
+      return {
+        gradesReady: /^(true|1|yes|نعم)$/i.test(row.grades_ready || ""),
+      };
+    } catch (e) {
+      return null; // optional tab — silently fall back
+    }
+  }
 }

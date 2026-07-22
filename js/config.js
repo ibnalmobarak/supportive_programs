@@ -24,6 +24,7 @@ window.SITE_CONFIG = {
     // تبويب صور المتصفح (Swiper) في الرئيسية: image_url, title, date, time, points, program_id  (اختياري)
     // إن لم يوجد هذا التبويب، سيعتمد المتصفح تلقائياً على البرامج المعلّمة "جديد" وصورها (preview_url)
     SWIPER_GID: "951759987",
+    SETTINGS_GID: "878620133",
   },
 
   // ── Looker Studio ──────────────────────────────────────────────

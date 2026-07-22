@@ -54,9 +54,12 @@ export class App {
     });
 
     this.looker = new LookerEmbed(config);
-    this.nav = new Navigation((sectionId) => {
-      if (sectionId === "grades") this.looker.init();
-    });
+    this.nav = new Navigation(async (sectionId) => {
+  if (sectionId === "grades") {
+    const settings = await this.sheets.fetchSettings();
+    this.looker.init(settings);
+  }
+});
     this.theme = new ThemeToggle();
   }
 
