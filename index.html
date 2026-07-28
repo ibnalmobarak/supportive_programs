@@ -1,214 +1,223 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
-<title>منصة البرامج المساندة — عبدالله ابن المبارك</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.14.0/dist/tabler-icons.min.css">
-<link rel="stylesheet" href="css/styles.css">
-<link rel="icon" type="image/png" href="assets/LOGO.png">
-<script>
-  if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.documentElement.setAttribute('data-theme', 'dark');
-  }
-</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>منصة البرامج المساندة — عبدالله ابن المبارك</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.14.0/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" type="image/png" href="assets/LOGO.png">
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  </script>
 </head>
+
 <body>
 
-<!-- ── TOPBAR ── -->
-<header class="topbar">
-  <div class="topbar-inner">
-    <a class="logo-wrap fade-in-up" href="#" style="animation-delay: 0.1s">
-      <div class="logo-icon">
-        <img src="assets/LOGO.png" alt="Home" style="width: 20px; height: 30px; vertical-align: middle;">
-      </i></div>
-      <div class="logo-text">
-        <h1>منصة البرامج المساندة</h1>
-        <p>مجمع عبدالله ابن المبارك الافتراضي</p>
-      </div>
-    </a>
-    <nav class="nav fade-in-up" style="animation-delay: 0.2s">
-      <button class="nav-btn active" data-section="home">
-        <i class="ti ti-home" aria-hidden="true"></i><span>الرئيسية</span>
-      </button>
-      <button class="nav-btn" data-section="stages">
-        <i class="ti ti-school" aria-hidden="true"></i><span>المراحل</span>
-      </button>
-      <button class="nav-btn" data-section="grades">
-        <i class="ti ti-medal" aria-hidden="true"></i><span>مصرف النقاط</span>
-      </button>
-      <button class="nav-btn theme-toggle" id="theme-toggle" aria-label="تبديل الوضع الليلي">
-        <i class="ti ti-moon" aria-hidden="true" id="theme-icon"></i>
-      </button>
-    </nav>
-  </div>
-</header>
+  <!-- ── TOPBAR ── -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="logo-wrap fade-in-up" href="#" style="animation-delay: 0.1s">
+        <div class="logo-icon">
+          <img src="assets/LOGO.png" alt="Home" style="width: 20px; height: 30px; vertical-align: middle;">
+          </i>
+        </div>
+        <div class="logo-text">
+          <h1>منصة البرامج المساندة</h1>
+          <p>مجمع عبدالله ابن المبارك الافتراضي</p>
+        </div>
+      </a>
+      <nav class="nav fade-in-up" style="animation-delay: 0.2s">
+        <button class="nav-btn active" data-section="home">
+          <i class="ti ti-home" aria-hidden="true"></i><span>الرئيسية</span>
+        </button>
+        <button class="nav-btn" data-section="stages">
+          <i class="ti ti-school" aria-hidden="true"></i><span>المراحل</span>
+        </button>
+        <button class="nav-btn" data-section="grades">
+          <i class="ti ti-medal" aria-hidden="true"></i><span>مصرف النقاط</span>
+        </button>
+        <button class="nav-btn theme-toggle" id="theme-toggle" aria-label="تبديل الوضع الليلي">
+          <i class="ti ti-moon" aria-hidden="true" id="theme-icon"></i>
+        </button>
+      </nav>
+    </div>
+  </header>
 
-<!-- ══════════════════ HOME ══════════════════ -->
-<section id="sec-home" class="main-content">
+  <!-- ══════════════════ HOME ══════════════════ -->
+  <section id="sec-home" class="main-content">
 
-  <div class="hero">
-    <div class="fade-in-up" style="animation-delay: 0.2s;"><img src="assets/LOGO.png" alt="Home" style="height: 200px; vertical-align: middle;"></div>
-    <div class="hero-badge fade-in-up" style="animation-delay: 0.1s">بسم الله الرحمن الرحيم</div>
-    <h2 class="fade-in-up" style="animation-delay: 0.2s">منصة البرامج المساندة</h2>
-    <p class="fade-in-up" style="animation-delay: 0.3s">منصة متكاملة للبرامج القرآنية والتربوية والمهارية لجميع المراحل</p>
-    <p class="fade-in-up" style="animation-delay: 0.3s">للدورة الصيفية القرآنية السابعة والعشرون</p>
+    <div class="hero">
+      <div class="fade-in-up" style="animation-delay: 0.2s;"><img src="assets/LOGO.png" alt="Home"
+          style="height: 200px; vertical-align: middle;"></div>
+      <div class="hero-badge fade-in-up" style="animation-delay: 0.1s">بسم الله الرحمن الرحيم</div>
+      <h2 class="fade-in-up" style="animation-delay: 0.2s">منصة البرامج المساندة</h2>
+      <p class="fade-in-up" style="animation-delay: 0.3s">منصة متكاملة للبرامج القرآنية والتربوية والمهارية لجميع
+        المراحل</p>
+      <p class="fade-in-up" style="animation-delay: 0.3s">للدورة الصيفية القرآنية السابعة والعشرون</p>
 
-    <!-- <div class="hero-stats fade-in-up" style="animation-delay: 0.4s">
+      <!-- <div class="hero-stats fade-in-up" style="animation-delay: 0.4s">
       <div class="hero-stat"><div class="num">٤</div><div class="lbl">مراحل دراسية</div></div>
       <div class="hero-stat"><div class="num">١٠+</div><div class="lbl">برنامج نشط</div></div>
       <div class="hero-stat"><div class="num">٤</div><div class="lbl">أنواع البرامج</div></div>
     </div> -->
-  </div>
-
-  <div class="page">
-    <div class="section-header fade-in-up" style="animation-delay: 0.1s">
-      <div class="section-icon"><i class="ti ti-sparkles" aria-hidden="true"></i></div>
-      <div class="section-header-text">
-        <div class="section-title">الإعلانات والبرامج العامة</div>
-        <div class="section-sub">هنا ستجد الإعلانات العامة والبرامج العامة المقامة لجميع المراحل</div>
-      </div>
     </div>
 
-    <div id="home-status" class="data-status loading"></div>
-
-    <div class="swiper-hint fade-in-up" id="swiper-hint" style="animation-delay: 0.2s">
-      <i class="ti ti-arrows-horizontal" aria-hidden="true"></i> اسحب يميناً أو يساراً لاستعراض البرامج
-    </div>
-    <div class="home-swiper-wrap fade-in-up" id="home-swiper-wrap" style="animation-delay: 0.3s"></div>
-
-   <div class="timeline-label"><i class="ti ti-clock" aria-hidden="true"></i> البرامج الجارية</div>
-    <div class="cards-grid" id="home-cards-current"></div>
-
-    <div class="timeline-label"><i class="ti ti-hourglass" aria-hidden="true"></i> البرامج القادمة</div>
-    <div class="cards-grid" id="home-cards-upcoming"></div>
-
-    <div class="timeline-label"><i class="ti ti-history" aria-hidden="true"></i> البرامج السابقة</div>
-    <div class="cards-grid" id="home-cards-past"></div>
-  </div>
-</section>
-
-<!-- ══════════════════ STAGES ══════════════════ -->
-<section id="sec-stages" style="display:none" class="main-content">
-  <div class="page">
-    <div class="section-header fade-in-up" style="animation-delay: 0.1s">
-      <div class="section-icon"><i class="ti ti-school" aria-hidden="true"></i></div>
-      <div class="section-header-text">
-        <div class="section-title">برامج المراحل الدراسية</div>
-        <div class="section-sub">اختر المرحلة لعرض برامجها السابقة والحالية والقادمة</div>
-      </div>
-    </div>
-
-    <div id="stages-status" class="data-status loading"></div>
-
-    <div class="stage-tabs fade-in-up" style="animation-delay: 0.2s">
-      <button class="stage-tab active" data-stage="secondary"><i class="ti ti-school" aria-hidden="true"></i> الثانوية</button>
-      <button class="stage-tab" data-stage="middle"><i class="ti ti-building" aria-hidden="true"></i> المتوسطة</button>
-      <button class="stage-tab" data-stage="upper-primary"><i class="ti ti-books" aria-hidden="true"></i> الابتدائية العليا</button>
-      <button class="stage-tab" data-stage="lower-primary"><i class="ti ti-star" aria-hidden="true"></i> الابتدائية الأولية</button>
-    </div>
-
-    <div class="timeline-label"><i class="ti ti-clock" aria-hidden="true"></i> البرامج الجارية</div>
-    <div class="mini-grid" id="current-progs"></div>
-
-    <div class="timeline-label"><i class="ti ti-hourglass" aria-hidden="true"></i> البرامج القادمة</div>
-    <div class="mini-grid" id="upcoming-progs"></div>
-
-    <div class="timeline-label"><i class="ti ti-history" aria-hidden="true"></i> البرامج السابقة</div>
-    <div class="mini-grid" id="past-progs"></div>
-  </div>
-</section>
-
-<!-- ══════════════════ GRADES ══════════════════ -->
-<section id="sec-grades" style="display:none" class="main-content">
-  <div class="page">
-
-    <!-- <div class="section-header">
-      <div class="section-icon"><i class="ti ti-stopwatch" aria-hidden="true"></i></div>
-      <div class="section-header-text">
-        <div class="section-title">قريبا...</div>
-      </div>
-    </div> -->
-
-    <div class="section-header fade-in-up" style="animation-delay: 0.2s">
-      <div class="section-icon"><i class="ti ti-chart-bar" aria-hidden="true"></i></div>
-      <div class="section-header-text">
-        <div class="section-title">مصرف النقاط</div>
-        <div class="section-sub">تستطيع هنا الاطلاع على لائحة الصدارة والنقاط الخاصة بك </div>
-      </div>
-    </div>
-
-    <div class="grades-card fade-in-up" style="animation-delay: 0.2s">
-      <div class="grades-head">
-        <div class="grades-head-title"><i class="ti ti-medal" aria-hidden="true"></i> لائحة الصدارة</div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:11px;color:rgba(255,255,255,0.72)">Google Looker Studio</span>
-          <div style="width:9px;height:9px;border-radius:50%;background:#5DCAA5"></div>
+    <div class="page">
+      <div class="section-header fade-in-up" style="animation-delay: 0.1s">
+        <div class="section-icon"><i class="ti ti-sparkles" aria-hidden="true"></i></div>
+        <div class="section-header-text">
+          <div class="section-title">الإعلانات والبرامج العامة</div>
+          <div class="section-sub">هنا ستجد الإعلانات العامة والبرامج العامة المقامة لجميع المراحل</div>
         </div>
       </div>
-      <div class="grades-body">
-        <!-- <div class="stats-row">
-          <div class="stat-box">
-            <div class="num" id="stat-avg" style="color:var(--green-main)">0٪</div>
-            <div class="lbl">متوسط الدرجات</div>
-          </div>
-          <div class="stat-box">
-            <div class="num" id="stat-students" style="color:var(--blue-dark)">142</div>
-            <div class="lbl">إجمالي الطلاب</div>
-          </div>
-          <div class="stat-box">
-            <div class="num" id="stat-programs" style="color:var(--amber-dark)">10</div>
-            <div class="lbl">برامج مسجلة</div>
-          </div>
-          <div class="stat-box">
-            <div class="num" id="stat-participation" style="color:var(--green-accent)">0٪</div>
-            <div class="lbl">نسبة المشاركة</div>
-          </div>
-        </div> -->
 
-        <div class="looker-frame-wrap" id="looker-embed-wrap">
-          <div class="embed-area">
-            <i class="ti ti-brand-google" aria-hidden="true"></i>
-            <h3>سيتم تحميل لوحة Looker Studio عند فتح هذا القسم</h3>
-            <p>اضغط على تبويب «الدرجات» لتحميل التقرير</p>
+      <div id="home-status" class="data-status loading"></div>
+
+      <div class="swiper-hint fade-in-up" id="swiper-hint" style="animation-delay: 0.2s">
+        <i class="ti ti-arrows-horizontal" aria-hidden="true"></i> اسحب يميناً أو يساراً لاستعراض البرامج
+      </div>
+      <div class="home-swiper-wrap fade-in-up" id="home-swiper-wrap" style="animation-delay: 0.3s"></div>
+
+      <div class="timeline-label"><i class="ti ti-clock" aria-hidden="true"></i> البرامج الجارية</div>
+      <div class="cards-grid" id="home-cards-current"></div>
+
+      <div class="timeline-label"><i class="ti ti-hourglass" aria-hidden="true"></i> البرامج القادمة</div>
+      <div class="cards-grid" id="home-cards-upcoming"></div>
+
+      <div class="timeline-label"><i class="ti ti-history" aria-hidden="true"></i> البرامج السابقة</div>
+      <div class="cards-grid" id="home-cards-past"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ STAGES ══════════════════ -->
+  <section id="sec-stages" style="display:none" class="main-content">
+    <div class="page">
+      <div class="section-header fade-in-up" style="animation-delay: 0.1s">
+        <div class="section-icon"><i class="ti ti-school" aria-hidden="true"></i></div>
+        <div class="section-header-text">
+          <div class="section-title">برامج المراحل الدراسية</div>
+          <div class="section-sub">اختر المرحلة لعرض برامجها السابقة والحالية والقادمة</div>
+        </div>
+      </div>
+
+      <div id="stages-status" class="data-status loading"></div>
+
+      <div class="stage-tabs fade-in-up" style="animation-delay: 0.2s">
+        <button class="stage-tab active" data-stage="secondary"><i class="ti ti-school" aria-hidden="true"></i>
+          الثانوية</button>
+        <button class="stage-tab" data-stage="middle"><i class="ti ti-building" aria-hidden="true"></i>
+          المتوسطة</button>
+        <button class="stage-tab" data-stage="upper-primary"><i class="ti ti-books" aria-hidden="true"></i> الابتدائية
+          العليا</button>
+        <button class="stage-tab" data-stage="lower-primary"><i class="ti ti-star" aria-hidden="true"></i> الابتدائية
+          الأولية</button>
+      </div>
+
+      <div class="timeline-label"><i class="ti ti-clock" aria-hidden="true"></i> البرامج الجارية</div>
+      <div class="mini-grid" id="current-progs"></div>
+
+      <div class="timeline-label"><i class="ti ti-hourglass" aria-hidden="true"></i> البرامج القادمة</div>
+      <div class="mini-grid" id="upcoming-progs"></div>
+
+      <div class="timeline-label"><i class="ti ti-history" aria-hidden="true"></i> البرامج السابقة</div>
+      <div class="mini-grid" id="past-progs"></div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ GRADES ══════════════════ -->
+  <section id="sec-grades" style="display:none" class="main-content">
+    <div class="page">
+
+      <div class="section-header fade-in-up" style="animation-delay: 0.2s">
+        <div class="section-icon"><i class="ti ti-chart-bar" aria-hidden="true"></i></div>
+        <div class="section-header-text">
+          <div class="section-title">مصرف النقاط</div>
+          <div class="section-sub">تستطيع هنا الاطلاع على لائحة الصدارة والنقاط الخاصة بك </div>
+        </div>
+      </div>
+
+      <div class="fade-in-up" style="animation-delay: 0.2s;"><img src="assets/grades_logo.png" alt="Home"
+          style="height: 200px; vertical-align: middle;"></div>
+
+      <div class="grades-dashboard fade-in-up" id="grades-dashboard" style="animation-delay: 0.2s">
+        <header class="grades-header">
+          <img src="https://i.postimg.cc/ZKzd6BMt/Asset-2-4x.png" alt="مصرف النقاط" class="grades-logo">
+        </header>
+
+        <div class="grades-filters">
+          <div class="filter-group">
+            <label>اختر الحلقة</label>
+            <select id="halaqahFilter">
+              <option value="الكل">جميع الحلقات</option>
+            </select>
           </div>
+          <div class="filter-group">
+            <label>اختر الطالب</label>
+            <select id="studentFilter">
+              <option value="الكل">الكل (عرض الأوائل)</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>اختر البرنامج</label>
+            <select id="programFilter">
+              <option value="الكل">جميع البرامج</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="score-card">
+          <h2 id="scoreTitle">إجمالي النقاط للبيانات المحددة</h2>
+          <div class="points" id="totalPoints">0</div>
+          <div id="studentDetailsContainer"></div>
+        </div>
+
+        <div id="grades-loading" class="data-status loading"
+          style="display: none; justify-content: center; padding: 20px;">
+          <i class="ti ti-loader"></i> جاري جلب البيانات...
+        </div>
+
+        <div class="leaderboards-grid" id="leaderboardsGrid">
         </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ── FOOTER ── -->
-<footer class="footer">
-  جميع الحقوق محفوظة © <span>مجمع عبدالله ابن المبارك الافتراضي</span> — البرامج المساندة
-</footer>
+  <!-- ── FOOTER ── -->
+  <footer class="footer">
+    جميع الحقوق محفوظة © <span>مجمع عبدالله ابن المبارك الافتراضي</span> — البرامج المساندة
+  </footer>
 
-<!-- ══════════════════ MODAL ══════════════════ -->
-<div class="overlay" id="overlay">
-  <div class="modal" role="dialog" aria-modal="true">
-    <div class="modal-head">
-      <div class="modal-head-title" id="modal-title">تفاصيل البرنامج</div>
-      <button class="modal-close" aria-label="إغلاق"><i class="ti ti-x"></i></button>
+  <!-- ══════════════════ MODAL ══════════════════ -->
+  <div class="overlay" id="overlay">
+    <div class="modal" role="dialog" aria-modal="true">
+      <div class="modal-head">
+        <div class="modal-head-title" id="modal-title">تفاصيل البرنامج</div>
+        <button class="modal-close" aria-label="إغلاق"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <img src="https://drive.google.com/file/d/10eeulHOCUsiuqlcn3vRE2lqH4ActcGIa/view?usp=sharing" alt="">
+      </div>
     </div>
-    <div class="modal-body" id="modal-body">
-      <img src="https://drive.google.com/file/d/10eeulHOCUsiuqlcn3vRE2lqH4ActcGIa/view?usp=sharing" alt="">
-    </div>
   </div>
-</div>
 
-<!-- ══════════════════ LIGHTBOX (fullscreen swiper image) ══════════════════ -->
-<div class="lightbox-overlay" id="lightbox-overlay">
-  <button class="lightbox-close" aria-label="إغلاق"><i class="ti ti-x"></i></button>
-  <img class="lightbox-img" id="lightbox-img" src="" alt="">
-</div>
+  <!-- ══════════════════ LIGHTBOX (fullscreen swiper image) ══════════════════ -->
+  <div class="lightbox-overlay" id="lightbox-overlay">
+    <button class="lightbox-close" aria-label="إغلاق"><i class="ti ti-x"></i></button>
+    <img class="lightbox-img" id="lightbox-img" src="" alt="">
+  </div>
 
 
-<script src="js/config.js"></script>
-<script type="module" src="js/main.js"></script>
+  <script src="js/config.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
+
 </html>

@@ -16,7 +16,7 @@ import { ProgramModal } from "../components/ProgramModal.js";
 import { Lightbox } from "../components/Lightbox.js";
 import { ThemeToggle } from "../components/ThemeToggle.js";
 import { Navigation } from "../components/Navigation.js";
-import { LookerEmbed } from "../components/LookerEmbed.js";
+import { GradesDashboard } from "../components/GradesDashboard.js";
 import { $id } from "../utils/dom.js";
 
 export class App {
@@ -53,13 +53,13 @@ export class App {
       },
     });
 
-    this.looker = new LookerEmbed(config);
+    this.gradesDashboard = new GradesDashboard(config);
     this.nav = new Navigation(async (sectionId) => {
-  if (sectionId === "grades") {
-    const settings = await this.sheets.fetchSettings();
-    this.looker.init(settings);
-  }
-});
+      if (sectionId === "grades") {
+        const settings = await this.sheets.fetchSettings();
+        this.gradesDashboard.init(settings);
+      }
+    });
     this.theme = new ThemeToggle();
   }
 
@@ -151,14 +151,14 @@ export class App {
       this.state.swiperItems && this.state.swiperItems.length
         ? this.state.swiperItems
         : generalPrograms.map((p) => ({
-            title: p.title,
-            date: p.date,
-            time: p.time,
-            points: p.points,
-            programId: p.id,
-            preview: p.preview,
-            type: p.type,
-          }));
+          title: p.title,
+          date: p.date,
+          time: p.time,
+          points: p.points,
+          programId: p.id,
+          preview: p.preview,
+          type: p.type,
+        }));
     this.swiper.render(swiperItems);
     this.cards.render(generalPrograms);
   }

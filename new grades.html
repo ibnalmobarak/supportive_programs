@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مصرف النقاط - لوحة البيانات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3b1c54; /* بنفسجي غامق */
+            --secondary-color: #5a2e7c; /* بنفسجي فاتح */
+            --gold-color: #d4af37; /* ذهبي */
+            --gold-light: #f3e5ab; /* ذهبي فاتح */
+            --bg-color: #faf8f5;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-image: url('https://i.postimg.cc/ZqNmPRQx/alsh%CA%BFar.png');
+            background-size: 40%;
+            background-position: center;
+            background-attachment: fixed;
+            background-blend-mode: soft-light;
+            background-repeat: no-repeat;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-bottom: 5px solid var(--gold-color);
+        }
+
+        header img {
+            max-width: 350px;
+            height: auto;
+        }
+
+        .filters-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            border-right: 5px solid var(--primary-color);
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .filter-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        .filter-group select:focus {
+            border-color: var(--gold-color);
+            box-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
+        }
+
+        .score-card {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-align: center;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(59, 28, 84, 0.2);
+            position: relative;
+            /* إزالة overflow:hidden لكي لا يقطع المحتوى لو زاد */
+        }
+
+        .score-card::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .score-card h2 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--gold-light);
+        }
+
+        .score-card .points {
+            font-size: 60px;
+            font-weight: 900;
+            margin: 10px 0 0 0;
+            color: white;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        /* تنسيق جدول تفاصيل الطالب داخل البطاقة */
+        .student-details-table {
+            width: 100%;
+            max-width: 600px;
+            margin: 25px auto 0 auto;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .student-details-table th, .student-details-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .student-details-table th {
+            background: rgba(0, 0, 0, 0.2);
+            color: var(--gold-light);
+            font-weight: bold;
+        }
+
+        .student-details-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .student-details-table td:nth-child(2) {
+            font-weight: bold;
+            color: var(--gold-light);
+        }
+
+        .leaderboards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+        }
+
+        .stage-table-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .stage-title {
+            background: var(--primary-color);
+            color: white;
+            padding: 15px;
+            margin: 0;
+            text-align: center;
+            font-size: 20px;
+            border-bottom: 3px solid var(--gold-color);
+        }
+
+        table.leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.leaderboard-table th, table.leaderboard-table td {
+            padding: 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        table.leaderboard-table th {
+            background-color: var(--gold-light);
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        table.leaderboard-table tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
+
+        table.leaderboard-table tr:hover {
+            background-color: #f0f0f0;
+        }
+
+        .rank {
+            font-weight: bold;
+            color: var(--primary-color);
+            background: var(--gold-light);
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        table.leaderboard-table tr:nth-child(1) .rank { background: #FFD700; color: #000; box-shadow: 0 0 10px rgba(255,215,0,0.5); }
+        table.leaderboard-table tr:nth-child(2) .rank { background: #C0C0C0; color: #000; }
+        table.leaderboard-table tr:nth-child(3) .rank { background: #cd7f32; color: #fff; }
+
+        .loader {
+            text-align: center;
+            padding: 50px;
+            font-size: 20px;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .leaderboards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <img src="https://i.postimg.cc/ZKzd6BMt/Asset-2-4x.png" alt="مصرف النقاط">
+        </header>
+
+        <div class="filters-container">
+            <!-- ترتيب الفلاتر: الحلقة أولاً ثم الطالب ثم البرنامج -->
+            <div class="filter-group">
+                <label>اختر الحلقة</label>
+                <select id="halaqahFilter">
+                    <option value="الكل">جميع الحلقات</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>اختر الطالب</label>
+                <select id="studentFilter">
+                    <option value="الكل">الكل (عرض الأوائل)</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>اختر البرنامج</label>
+                <select id="programFilter">
+                    <option value="الكل">جميع البرامج</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="score-card">
+            <h2 id="scoreTitle">إجمالي النقاط للبيانات المحددة</h2>
+            <div class="points" id="totalPoints">0</div>
+            <!-- حاوية تفاصيل درجات الطالب -->
+            <div id="studentDetailsContainer"></div>
+        </div>
+
+        <div id="loading" class="loader">جاري جلب البيانات...</div>
+        
+        <div class="leaderboards-grid" id="leaderboardsGrid">
+            <!-- سيتم توليد جداول الأوائل هنا عبر الجافاسكربت -->
+        </div>
+
+    </div>
+
+    <script>
+        // إعدادات جوجل شيت
+        const SHEET_ID = '15qGmlrNz3XCnu8a6IhudbSOtWgiGhYjljRezfLHWo5E';
+        const SHEET_NAME = 'داتا ستيديو';
+        const URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+
+        let rawData = [];
+
+        async function fetchData() {
+            try {
+                const response = await fetch(URL);
+                const text = await response.text();
+                const json = JSON.parse(text.substring(47).slice(0, -2));
+                
+                rawData = json.table.rows.map(row => {
+                    return {
+                        student: row.c[0] ? row.c[0].v : '',
+                        halaqah: row.c[1] ? row.c[1].v : '',
+                        program: row.c[2] ? row.c[2].v : '',
+                        score: row.c[3] ? Number(row.c[3].v) : 0,
+                        stage: row.c[4] ? row.c[4].v : 'غير محدد'
+                    };
+                }).filter(row => row.student !== '' && row.student !== 'اسم الطالب'); 
+
+                document.getElementById('loading').style.display = 'none';
+                initFilters(); // تهيئة الفلاتر لأول مرة
+                updateDashboard();
+
+            } catch (error) {
+                console.error("Error fetching data: ", error);
+                document.getElementById('loading').innerText = "حدث خطأ أثناء جلب البيانات. تأكد من أن الشيت متاح للقراءة واسم الصفحة صحيح.";
+            }
+        }
+
+        // دالة تهيئة الفلاتر وربط الأحداث
+        function initFilters() {
+            const halaqahs = [...new Set(rawData.map(item => item.halaqah))].sort();
+            const programs = [...new Set(rawData.map(item => item.program))].sort();
+
+            const halaqahSelect = document.getElementById('halaqahFilter');
+            const programSelect = document.getElementById('programFilter');
+
+            halaqahs.forEach(h => halaqahSelect.add(new Option(h, h)));
+            programs.forEach(p => programSelect.add(new Option(p, p)));
+
+            // تحديث قائمة الطلاب عند تغيير الحلقة
+            halaqahSelect.addEventListener('change', () => {
+                updateStudentDropdown();
+                updateDashboard();
+            });
+
+            document.getElementById('studentFilter').addEventListener('change', updateDashboard);
+            programSelect.addEventListener('change', updateDashboard);
+
+            // تعبئة قائمة الطلاب لأول مرة (جميع الطلاب)
+            updateStudentDropdown();
+        }
+
+        // دالة تحديث قائمة الطلاب بناءً على الحلقة المختارة
+        function updateStudentDropdown() {
+            const selectedHalaqah = document.getElementById('halaqahFilter').value;
+            const studentSelect = document.getElementById('studentFilter');
+            
+            // الاحتفاظ بالطالب المحدد حالياً إن أمكن
+            const currentSelectedStudent = studentSelect.value;
+
+            // تفريغ القائمة الحالية
+            studentSelect.innerHTML = '<option value="الكل">الكل (عرض الأوائل)</option>';
+
+            // فلترة الطلاب بناءً على الحلقة
+            let filteredStudents = rawData;
+            if (selectedHalaqah !== 'الكل') {
+                filteredStudents = rawData.filter(item => item.halaqah === selectedHalaqah);
+            }
+
+            // استخراج أسماء الطلاب بدون تكرار
+            const students = [...new Set(filteredStudents.map(item => item.student))].sort();
+            students.forEach(s => studentSelect.add(new Option(s, s)));
+
+            // إذا كان الطالب المختار مسبقاً موجوداً في القائمة الجديدة، أبقه محدداً
+            if (students.includes(currentSelectedStudent)) {
+                studentSelect.value = currentSelectedStudent;
+            }
+        }
+
+        function updateDashboard() {
+            const selectedHalaqah = document.getElementById('halaqahFilter').value;
+            const selectedStudent = document.getElementById('studentFilter').value;
+            const selectedProgram = document.getElementById('programFilter').value;
+
+            let filteredData = rawData;
+            if (selectedHalaqah !== 'الكل') filteredData = filteredData.filter(d => d.halaqah === selectedHalaqah);
+            if (selectedStudent !== 'الكل') filteredData = filteredData.filter(d => d.student === selectedStudent);
+            if (selectedProgram !== 'الكل') filteredData = filteredData.filter(d => d.program === selectedProgram);
+
+            const totalScore = filteredData.reduce((sum, item) => sum + item.score, 0);
+            animateValue("totalPoints", 0, totalScore, 1000);
+
+            const detailsContainer = document.getElementById('studentDetailsContainer');
+            detailsContainer.innerHTML = ''; // إخفاء التفاصيل افتراضياً
+
+            if (selectedStudent !== 'الكل') {
+                // عرض بيانات طالب محدد
+                document.getElementById('scoreTitle').innerText = `إجمالي نقاط الطالب: ${selectedStudent}`;
+                document.getElementById('leaderboardsGrid').innerHTML = ''; // إخفاء لوحة الشرف
+                
+                // بناء جدول تفاصيل الدرجات للطالب
+                let programScores = {};
+                filteredData.forEach(item => {
+                    if(!programScores[item.program]) programScores[item.program] = 0;
+                    programScores[item.program] += item.score;
+                });
+
+                if (Object.keys(programScores).length > 0) {
+                    let detailsHTML = `
+                        <table class="student-details-table">
+                            <thead>
+                                <tr>
+                                    <th>اسم البرنامج</th>
+                                    <th>النقاط المكتسبة</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                    `;
+                    for (let prog in programScores) {
+                        detailsHTML += `<tr><td>${prog}</td><td>${programScores[prog]}</td></tr>`;
+                    }
+                    detailsHTML += `</tbody></table>`;
+                    detailsContainer.innerHTML = detailsHTML;
+                }
+
+            } else {
+                // عرض الحالة العامة (لوحة الشرف)
+                document.getElementById('scoreTitle').innerText = 'إجمالي النقاط';
+                renderLeaderboards(filteredData);
+            }
+        }
+
+        function renderLeaderboards(data) {
+            const grid = document.getElementById('leaderboardsGrid');
+            grid.innerHTML = '';
+
+            const aggregated = {};
+            
+            data.forEach(item => {
+                if (!aggregated[item.stage]) aggregated[item.stage] = {};
+                
+                if (!aggregated[item.stage][item.student]) {
+                    aggregated[item.stage][item.student] = {
+                        student: item.student,
+                        halaqah: item.halaqah,
+                        totalScore: 0
+                    };
+                }
+                aggregated[item.stage][item.student].totalScore += item.score;
+            });
+
+            for (const stage in aggregated) {
+                let studentsArr = Object.values(aggregated[stage]);
+                studentsArr.sort((a, b) => b.totalScore - a.totalScore);
+                let top10 = studentsArr.slice(0, 10);
+
+                if(top10.length === 0) continue;
+
+                let tableHTML = `
+                    <div class="stage-table-container">
+                        <h3 class="stage-title">المرحلة: ${stage} (أفضل 10)</h3>
+                        <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>اسم الطالب</th>
+                                    <th>الحلقة</th>
+                                    <th>النقاط</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                top10.forEach((s, index) => {
+                    tableHTML += `
+                        <tr>
+                            <td><span class="rank">${index + 1}</span></td>
+                            <td>${s.student}</td>
+                            <td>${s.halaqah}</td>
+                            <td><strong>${s.totalScore}</strong></td>
+                        </tr>
+                    `;
+                });
+
+                tableHTML += `</tbody></table></div>`;
+                grid.innerHTML += tableHTML;
+            }
+        }
+
+        function animateValue(id, start, end, duration) {
+            if (start === end) {
+                document.getElementById(id).innerHTML = end.toLocaleString('en-US');
+                return;
+            }
+            let range = end - start;
+            let current = start;
+            let increment = end > start ? Math.ceil(range / 20) : -1;
+            let stepTime = Math.abs(Math.floor(duration / (range/increment)));
+            let obj = document.getElementById(id);
+            let timer = setInterval(function() {
+                current += increment;
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                obj.innerHTML = current.toLocaleString('en-US');
+            }, stepTime);
+        }
+
+        fetchData();
+    </script>
+</body>
+</html>
