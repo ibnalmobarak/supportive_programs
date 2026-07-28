@@ -9,7 +9,7 @@ export class GradesDashboard {
     this.config = config;
     this.initialized = false;
     this.rawData = [];
-    
+
     // Hardcoded from the original new grades.html
     this.sheetId = '15qGmlrNz3XCnu8a6IhudbSOtWgiGhYjljRezfLHWo5E';
     this.sheetName = 'داتا ستيديو';
@@ -33,14 +33,14 @@ export class GradesDashboard {
     }
 
     this.showLoading(true);
-    
+
     try {
       const url = `https://docs.google.com/spreadsheets/d/${this.sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(this.sheetName)}`;
       const response = await fetch(url, { cache: "no-store" });
       const text = await response.text();
       // Remove the JSONP padding
       const json = JSON.parse(text.substring(47).slice(0, -2));
-      
+
       this.rawData = json.table.rows.map(row => {
         return {
           student: row.c[0] && row.c[0].v ? row.c[0].v : '',
@@ -49,7 +49,7 @@ export class GradesDashboard {
           score: row.c[3] && row.c[3].v ? Number(row.c[3].v) : 0,
           stage: row.c[4] && row.c[4].v ? row.c[4].v : 'غير محدد'
         };
-      }).filter(row => row.student !== '' && row.student !== 'اسم الطالب'); 
+      }).filter(row => row.student !== '' && row.student !== 'اسم الطالب');
 
       this.showLoading(false);
       this.initFilters();
@@ -100,7 +100,7 @@ export class GradesDashboard {
   updateStudentDropdown() {
     const selectedHalaqah = document.getElementById('halaqahFilter').value;
     const studentSelect = document.getElementById('studentFilter');
-    
+
     if (!studentSelect) return;
 
     const currentSelectedStudent = studentSelect.value;
@@ -141,15 +141,15 @@ export class GradesDashboard {
     const totalScore = filteredData.reduce((sum, item) => sum + item.score, 0);
     this.animateValue("totalPoints", 0, totalScore, 1000);
 
-    detailsContainer.innerHTML = ''; 
+    detailsContainer.innerHTML = '';
 
     if (selectedStudent !== 'الكل') {
       scoreTitle.innerText = `إجمالي نقاط الطالب: ${selectedStudent}`;
-      leaderboardsGrid.innerHTML = ''; 
-      
+      leaderboardsGrid.innerHTML = '';
+
       let programScores = {};
       filteredData.forEach(item => {
-        if(!programScores[item.program]) programScores[item.program] = 0;
+        if (!programScores[item.program]) programScores[item.program] = 0;
         programScores[item.program] += item.score;
       });
 
@@ -182,10 +182,10 @@ export class GradesDashboard {
     grid.innerHTML = '';
 
     const aggregated = {};
-    
+
     data.forEach(item => {
       if (!aggregated[item.stage]) aggregated[item.stage] = {};
-      
+
       if (!aggregated[item.stage][item.student]) {
         aggregated[item.stage][item.student] = {
           student: item.student,
@@ -201,7 +201,7 @@ export class GradesDashboard {
       studentsArr.sort((a, b) => b.totalScore - a.totalScore);
       let top10 = studentsArr.slice(0, 10);
 
-      if(top10.length === 0) continue;
+      if (top10.length === 0) continue;
 
       let tableHTML = `
         <div class="stage-table-container">
@@ -237,20 +237,20 @@ export class GradesDashboard {
   animateValue(id, start, end, duration) {
     const obj = document.getElementById(id);
     if (!obj) return;
-    
+
     if (start === end) {
       obj.innerHTML = end.toLocaleString('en-US');
       return;
     }
-    
+
     let range = end - start;
     let current = start;
     let increment = end > start ? Math.ceil(range / 20) : -1;
-    let stepTime = Math.abs(Math.floor(duration / (range/increment)));
-    
+    let stepTime = Math.abs(Math.floor(duration / (range / increment)));
+
     // Handle very fast animations or 0 duration
     if (stepTime < 10) stepTime = 10;
-    
+
     let timer = setInterval(() => {
       current += increment;
       if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
