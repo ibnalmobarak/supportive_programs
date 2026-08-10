@@ -45,6 +45,9 @@
         <button class="nav-btn" data-section="grades">
           <i class="ti ti-medal" aria-hidden="true"></i><span>مصرف النقاط</span>
         </button>
+        <button class="nav-btn" data-section="recordings">
+          <i class="ti ti-video" aria-hidden="true"></i><span>المسارات التدريبية</span>
+        </button>
         <button class="nav-btn theme-toggle" id="theme-toggle" aria-label="تبديل الوضع الليلي">
           <i class="ti ti-moon" aria-hidden="true" id="theme-icon"></i>
         </button>
@@ -186,6 +189,27 @@
         <div class="leaderboards-grid" id="leaderboardsGrid">
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════ RECORDINGS ══════════════════ -->
+  <section id="sec-recordings" style="display:none" class="main-content">
+    <div class="hero">
+      <div class="fade-in-up" style="animation-delay: 0.1s;">
+        <i class="ti ti-video" style="font-size: 64px; opacity: 0.85;"></i>
+      </div>
+      <h2 class="fade-in-up" style="animation-delay: 0.2s">المسارات التدريبية</h2>
+      <p class="fade-in-up" style="animation-delay: 0.3s">يمكنك هنا إعادة مشاهدة تسجيلات اللقاءات السابقة لجميع المسارات التدريبية</p>
+    </div>
+    <div class="page">
+      <div class="section-header fade-in-up" style="animation-delay: 0.1s">
+        <div class="section-icon"><i class="ti ti-video" aria-hidden="true"></i></div>
+        <div class="section-header-text">
+          <div class="section-title">تسجيلات اللقاءات</div>
+          <div class="section-sub">اختر المرحلة ثم المسار لتصفح التسجيلات ومشاهدتها</div>
+        </div>
+      </div>
+      <div id="recordings-content"></div>
     </div>
   </section>
 

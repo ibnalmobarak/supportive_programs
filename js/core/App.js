@@ -16,6 +16,7 @@ import { ProgramModal } from "../components/ProgramModal.js";
 import { Lightbox } from "../components/Lightbox.js";
 import { ThemeToggle } from "../components/ThemeToggle.js";
 import { Navigation } from "../components/Navigation.js";
+import { RecordingsPaths } from "../components/RecordingsPaths.js";
 import { GradesDashboard } from "../components/GradesDashboard.js";
 import { $id } from "../utils/dom.js";
 
@@ -54,10 +55,14 @@ export class App {
     });
 
     this.gradesDashboard = new GradesDashboard(config);
+    this.recordingsPaths = new RecordingsPaths();
     this.nav = new Navigation(async (sectionId) => {
       if (sectionId === "grades") {
         const settings = await this.sheets.fetchSettings();
         this.gradesDashboard.init(settings);
+      }
+      if (sectionId === "recordings") {
+        this.recordingsPaths.init();
       }
     });
     this.theme = new ThemeToggle();

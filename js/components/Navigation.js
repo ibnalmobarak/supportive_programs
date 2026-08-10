@@ -5,7 +5,7 @@
 
 import { $all } from "../utils/dom.js";
 
-const SECTIONS = ["home", "stages", "grades"];
+const SECTIONS = ["home", "stages", "grades", "recordings"];
 
 export class Navigation {
   /**
