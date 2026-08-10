@@ -43,8 +43,8 @@ export const RECORDINGS_DATA = [
     ],
   },
   {
-    stageKey: "upper-primary",
-    stageLabel: "الابتدائية العليا",
+    stageKey: "all-remaining",
+    stageLabel: "الثانوية - المتوسطة - الابتدائية العليا",
     stageIcon: "ti-books",
     paths: [
       {
@@ -56,13 +56,6 @@ export const RECORDINGS_DATA = [
           },
         ],
       },
-    ],
-  },
-  {
-    stageKey: "middle",
-    stageLabel: "المتوسطة",
-    stageIcon: "ti-building",
-    paths: [
       {
         name: "مسار التفسير",
         meetings: [
@@ -72,13 +65,6 @@ export const RECORDINGS_DATA = [
           },
         ],
       },
-    ],
-  },
-  {
-    stageKey: "secondary",
-    stageLabel: "الثانوية",
-    stageIcon: "ti-school",
-    paths: [
       {
         name: "مسار العقيدة",
         meetings: [
@@ -91,3 +77,5 @@ export const RECORDINGS_DATA = [
     ],
   },
 ];
+
+
