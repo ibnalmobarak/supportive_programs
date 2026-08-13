@@ -125,4 +125,69 @@ export class SheetsService {
       return null; // optional tab — silently fall back
     }
   }
+
+  /**
+   * Fetches and groups the Recordings tab into Stage → Path → Meetings,
+   * the shape RecordingsPaths.js renders directly.
+   *
+   * Sheet columns: stage, path, title, url (stage_icon optional).
+   * A `stage` cell may list several stages separated by "-" (e.g.
+   * "الثانوية - المتوسطة"), in which case the same recording is grouped
+   * under each of those stages.
+   *
+   * Returns [] if the tab isn't configured (no RECORDINGS_GID set), so the
+   * UI can show an empty state. Throws on real fetch errors (bad GID,
+   * sheet not shared, etc.) so the caller can surface a retryable error.
+   */
+  async fetchRecordings() {
+    const gid = this.config.SHEETS.RECORDINGS_GID;
+    if (!gid) return [];
+
+    const rows = await this.#fetchTab(gid);
+    const stages = new Map(); // stageLabel -> { stageKey, stageLabel, stageIcon, paths: [...] }
+
+    rows.forEach(r => {
+      const url = this.#normalizeUrl(r.url || r.link || "");
+      const pathName = (r.path || r.track || "بدون مسار").trim();
+      const title = (r.title || "بدون عنوان").trim();
+      const explicitIcon = (r.stage_icon || "").trim();
+      if (!url) return; // a recording without a link is unusable, skip it
+
+      const stageLabels = (r.stage || r.stages || "")
+        .split("-")
+        .map(s => s.trim())
+        .filter(Boolean);
+      if (!stageLabels.length) return; // no stage(s) named, nothing to group it under
+
+      stageLabels.forEach(label => {
+        if (!stages.has(label)) {
+          stages.set(label, {
+            stageKey: label,
+            stageLabel: label,
+            stageIcon: explicitIcon || this.#guessStageIcon(label),
+            paths: [],
+          });
+        }
+        const stage = stages.get(label);
+        let path = stage.paths.find(p => p.name === pathName);
+        if (!path) {
+          path = { name: pathName, meetings: [] };
+          stage.paths.push(path);
+        }
+        path.meetings.push({ title, url });
+      });
+    });
+
+    return Array.from(stages.values());
+  }
+
+  /** Best-effort icon guess from a stage label's keywords, used when stage_icon is left blank. */
+  #guessStageIcon(label) {
+    const l = (label || "").trim();
+    if (/أولية/.test(l)) return "ti-star";
+    if (/متوسط/.test(l)) return "ti-building";
+    if (/ثانوي/.test(l)) return "ti-school";
+    if (/عليا|ابتدائي/.test(l)) return "ti-books";
+    return "ti-video";
+  }
 }

@@ -55,14 +55,14 @@ export class App {
     });
 
     this.gradesDashboard = new GradesDashboard(config);
-    this.recordingsPaths = new RecordingsPaths();
+    this.recordingsPaths = new RecordingsPaths(() => this.loadRecordings());
     this.nav = new Navigation(async (sectionId) => {
       if (sectionId === "grades") {
         const settings = await this.sheets.fetchSettings();
         this.gradesDashboard.init(settings);
       }
       if (sectionId === "recordings") {
-        this.recordingsPaths.init();
+        this.loadRecordings();
       }
     });
     this.theme = new ThemeToggle();
@@ -142,6 +142,19 @@ export class App {
         if (el) el.textContent = val;
       }
     });
+  }
+
+  // Fetched fresh from the Recordings sheet tab each time the section is
+  // opened, mirroring the Grades tab's on-demand loading pattern.
+  async loadRecordings() {
+    this.recordingsPaths.showLoading();
+    try {
+      const recordings = await this.sheets.fetchRecordings();
+      this.recordingsPaths.init(recordings);
+    } catch (err) {
+      console.error(err);
+      this.recordingsPaths.showError(err.message);
+    }
   }
 
   // The full-card grid always shows programs marked is_new = TRUE (stage "all").

@@ -1,29 +1,59 @@
 /**
  * js/components/RecordingsPaths.js
  * Three-level drill-down component for browsing training path recordings.
- * Hierarchy: Stage → Path → Meetings (with embedded video player + external link).
+ * Hierarchy: Stage → Path → Meetings (click "watch" to open the recording
+ * directly in a new tab — no in-page embed).
+ *
+ * Data comes from the Recordings Google Sheet tab (see SheetsService.fetchRecordings),
+ * already grouped into Stage → Path → Meetings by the time it reaches init().
  *
  * Follows the same class-based pattern as StageTabs.js.
  */
 
 import { $id, escapeHtml } from "../utils/dom.js";
-import { RECORDINGS_DATA } from "../data/recordingsData.js";
 
 export class RecordingsPaths {
-  constructor() {
-    this.data = RECORDINGS_DATA;
+  /** @param {() => void} [onRetry] called when the user taps "retry" after a load error */
+  constructor(onRetry) {
+    this.onRetry = onRetry;
+    this.data = [];
     this.currentView = "stages";
     this.selectedStage = null;
     this.selectedPath = null;
-    this.selectedMeeting = null;
     this.container = null;
   }
 
-  init() {
+  /** Renders the stage list from freshly-fetched sheet data. */
+  init(data) {
     if (!this.container) {
       this.container = $id("recordings-content");
     }
+    this.data = data || [];
     this.showStages();
+  }
+
+  /** Shown while SheetsService.fetchRecordings() is in flight. */
+  showLoading() {
+    if (!this.container) this.container = $id("recordings-content");
+    this.container.innerHTML = `
+      <div class="data-status loading">
+        <i class="ti ti-loader-2" aria-hidden="true"></i>
+        <span>جاري تحميل التسجيلات من Google Sheets...</span>
+      </div>
+    `;
+  }
+
+  /** Shown when the Recordings tab fails to load (bad GID, sheet not shared, etc.). */
+  showError(message) {
+    if (!this.container) this.container = $id("recordings-content");
+    this.container.innerHTML = `
+      <div class="data-status error">
+        <i class="ti ti-alert-triangle" aria-hidden="true"></i>
+        <span>تعذّر تحميل التسجيلات: ${escapeHtml(message)}</span>
+        <button class="retry-btn" id="recordings-retry">إعادة المحاولة</button>
+      </div>
+    `;
+    $id("recordings-retry")?.addEventListener("click", () => this.onRetry && this.onRetry());
   }
 
   /* ── Rendering ────────────────────────────────────── */
@@ -32,7 +62,6 @@ export class RecordingsPaths {
     this.currentView = "stages";
     this.selectedStage = null;
     this.selectedPath = null;
-    this.selectedMeeting = null;
     this.#render();
   }
 
@@ -41,7 +70,6 @@ export class RecordingsPaths {
     if (!this.selectedStage) return;
     this.currentView = "paths";
     this.selectedPath = null;
-    this.selectedMeeting = null;
     this.#render();
   }
 
@@ -49,15 +77,14 @@ export class RecordingsPaths {
     this.selectedPath = this.selectedStage.paths[pathIndex];
     if (!this.selectedPath) return;
     this.currentView = "meetings";
-    this.selectedMeeting = null;
     this.#render();
   }
 
-  showPlayer(meetingIndex) {
-    this.selectedMeeting = this.selectedPath.meetings[meetingIndex];
-    if (!this.selectedMeeting) return;
-    this.currentView = "player";
-    this.#render();
+  /** Opens the recording directly in a new tab — no embedded player. */
+  watch(meetingIndex) {
+    const meeting = this.selectedPath && this.selectedPath.meetings[meetingIndex];
+    if (!meeting || !meeting.url) return;
+    window.open(meeting.url, "_blank", "noopener,noreferrer");
   }
 
   /* ── Main render router ──────────────────────────── */
@@ -78,9 +105,6 @@ export class RecordingsPaths {
       case "meetings":
         contentHtml = this.#meetingsHtml();
         break;
-      case "player":
-        contentHtml = this.#playerHtml();
-        break;
     }
 
     this.container.innerHTML = breadcrumbHtml + contentHtml;
@@ -96,7 +120,7 @@ export class RecordingsPaths {
       `<button class="rec-breadcrumb-item" data-nav="stages"><i class="ti ti-home"></i> المراحل</button>`,
     ];
 
-    if (this.selectedStage && (this.currentView === "paths" || this.currentView === "meetings" || this.currentView === "player")) {
+    if (this.selectedStage) {
       if (this.currentView === "paths") {
         crumbs.push(`<span class="rec-breadcrumb-current"><i class="ti ${this.selectedStage.stageIcon}"></i> ${escapeHtml(this.selectedStage.stageLabel)}</span>`);
       } else {
@@ -104,16 +128,8 @@ export class RecordingsPaths {
       }
     }
 
-    if (this.selectedPath && (this.currentView === "meetings" || this.currentView === "player")) {
-      if (this.currentView === "meetings") {
-        crumbs.push(`<span class="rec-breadcrumb-current"><i class="ti ti-route"></i> ${escapeHtml(this.selectedPath.name)}</span>`);
-      } else {
-        crumbs.push(`<button class="rec-breadcrumb-item" data-nav="meetings"><i class="ti ti-route"></i> ${escapeHtml(this.selectedPath.name)}</button>`);
-      }
-    }
-
-    if (this.selectedMeeting && this.currentView === "player") {
-      crumbs.push(`<span class="rec-breadcrumb-current"><i class="ti ti-player-play"></i> ${escapeHtml(this.selectedMeeting.title)}</span>`);
+    if (this.selectedPath && this.currentView === "meetings") {
+      crumbs.push(`<span class="rec-breadcrumb-current"><i class="ti ti-route"></i> ${escapeHtml(this.selectedPath.name)}</span>`);
     }
 
     return `
@@ -126,6 +142,9 @@ export class RecordingsPaths {
   /* ── Stages view ─────────────────────────────────── */
 
   #stagesHtml() {
+    if (!this.data.length) {
+      return `<div class="empty-state">لا توجد تسجيلات متاحة حالياً</div>`;
+    }
     return `
       <div class="rec-grid">
         ${this.data.map((s, i) => `
@@ -184,42 +203,11 @@ export class RecordingsPaths {
             </div>
             <div class="rec-meeting-actions">
               <button class="rec-watch-btn" data-meeting-index="${i}">
-                <i class="ti ti-player-play"></i> مشاهدة التسجيل
+                <i class="ti ti-player-play"></i> مشاهدة التسجيل <i class="ti ti-external-link" aria-hidden="true"></i>
               </button>
             </div>
           </div>
         `).join("")}
-      </div>
-    `;
-  }
-
-  /* ── Player view (embedded video + external link) ── */
-
-  #playerHtml() {
-    const embedUrl = this.#toEmbedUrl(this.selectedMeeting.url);
-    const originalUrl = this.selectedMeeting.url;
-
-    return `
-      <div class="rec-player-wrap fade-in-up" style="animation-delay:0.1s">
-        <div class="rec-player-header">
-          <div class="rec-player-title">
-            <i class="ti ti-player-play"></i>
-            ${escapeHtml(this.selectedMeeting.title)} — ${escapeHtml(this.selectedPath.name)}
-          </div>
-        </div>
-        <div class="rec-embed-container">
-          <iframe
-            src="${embedUrl}"
-            allowfullscreen
-            allow="autoplay; encrypted-media"
-            frameborder="0"
-          ></iframe>
-        </div>
-        <div class="rec-player-footer">
-          <a href="${originalUrl}" target="_blank" rel="noopener noreferrer" class="rec-external-link">
-            <i class="ti ti-external-link"></i> فتح التسجيل في نافذة جديدة
-          </a>
-        </div>
       </div>
     `;
   }
@@ -235,11 +223,6 @@ export class RecordingsPaths {
         const nav = btn.dataset.nav;
         if (nav === "stages") this.showStages();
         else if (nav === "paths") this.showPaths(btn.dataset.stage);
-        else if (nav === "meetings") {
-          this.currentView = "meetings";
-          this.selectedMeeting = null;
-          this.#render();
-        }
       });
     });
 
@@ -253,39 +236,17 @@ export class RecordingsPaths {
       card.addEventListener("click", () => this.showMeetings(Number(card.dataset.pathIndex)));
     });
 
-    // Meeting items (click row or watch button)
+    // Meeting items (click row or watch button) — both open the recording directly
     this.container.querySelectorAll(".rec-meeting-item").forEach(item => {
-      item.addEventListener("click", () => this.showPlayer(Number(item.dataset.meetingIndex)));
+      item.addEventListener("click", () => this.watch(Number(item.dataset.meetingIndex)));
     });
 
     // Watch buttons (prevent double-fire from parent click)
     this.container.querySelectorAll(".rec-watch-btn").forEach(btn => {
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        this.showPlayer(Number(btn.dataset.meetingIndex));
+        this.watch(Number(btn.dataset.meetingIndex));
       });
     });
-  }
-
-  /* ── Helpers ─────────────────────────────────────── */
-
-  /**
-   * Converts a SharePoint sharing link to an embeddable iframe URL.
-   * SharePoint personal OneDrive video links can be embedded by replacing
-   * the path prefix and adding embed query params.
-   */
-  #toEmbedUrl(shareUrl) {
-    try {
-      const url = new URL(shareUrl);
-      // Convert personal sharepoint sharing URL to embed format
-      // e.g. :v:/g/personal/... → personal/.../embed
-      const embedUrl = shareUrl
-        .replace(/:v:\/g\//, "")
-        .split("?")[0] + "?embed=1&nav=" + (url.searchParams.get("nav") || "");
-      return embedUrl;
-    } catch {
-      // Fallback: just append embed parameter
-      return shareUrl + (shareUrl.includes("?") ? "&" : "?") + "embed=1";
-    }
   }
 }
